@@ -155,6 +155,7 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             label=_(u"Initial Land Use Map"),
             description=_(u"Provide an initial land use map for the scenario.  Unused if a Starting Scenario is provided."),
+            startup_directory='/luc/landuse',
         ),
         required=True,
         relationship='lucscenario_landuse',
@@ -169,6 +170,7 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             label=_(u"City and Population Centers"),
             description=_(u"Select the GIS layer with city centers."),
+            startup_directory='/luc/attractors',
         ),
         required=True,
         relationship='lucscenario_popcenters',
@@ -183,6 +185,7 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             label=_(u"Employment Centers"),
             description=_(u"Select a GIS layer containing employeers and employmment centers."),
+            startup_directory='/luc/attractors',
         ),
         required=True,
         relationship='lucscenario_empcenter',
@@ -197,6 +200,7 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             label=_(u"Digital Elevation Map"),
             description=_(u"Select a GIS layer that provides regional elevation."),
+            startup_directory='/luc/landuse',
         ),
         required=True,
         relationship='lucscenario_dem',
@@ -219,11 +223,11 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
 
 
     atapi.DateTimeField(
-        'end_time',
+        'start_time',
         storage=atapi.AnnotationStorage(),
         widget=atapi.CalendarWidget(
-            label=_(u"End Time"),
-            description=_(u"When the model completed."),
+            label=_(u"Start Time"),
+            description=_(u"When the model began execution."),
             visible={'view': 'hidden', 'edit': 'hidden'},
         ),
         validators=('isValidDate'),
@@ -231,11 +235,11 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
 
 
     atapi.DateTimeField(
-        'start_time',
+        'end_time',
         storage=atapi.AnnotationStorage(),
         widget=atapi.CalendarWidget(
-            label=_(u"Start Time"),
-            description=_(u"When the model began execution."),
+            label=_(u"End Time"),
+            description=_(u"When the model completed."),
             visible={'view': 'hidden', 'edit': 'hidden'},
         ),
         validators=('isValidDate'),
@@ -332,7 +336,7 @@ class LUCScenario(folder.ATFolder):
     security.declarePublic('getConfig')
     def getConfig(self):
         """Returns the cconfiguration necessary for running the model"""
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
 
         tree = Element('model')
         tag = SubElement(tree, 'title')
@@ -353,7 +357,7 @@ class LUCScenario(folder.ATFolder):
             tag.text = p.absolute_url() + '/getGraph'
 
         tag = SubElement(tree,'starting_year')
-        tag.text = self.getSyear()
+        tag.text = str(self.getSyear())
 
         # setup Starting Scenario
         if self.getStarting_scenario():
