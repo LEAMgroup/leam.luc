@@ -1,6 +1,6 @@
 """Definition of the LUC Scenario content type
 """
-from xml.etree.ElementTree import Element, SubElement, tostring
+from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 
 from zope.interface import implements
 
@@ -34,7 +34,7 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
         ),
         required=True,
         relationship='lucscenario_region',
-        allowed_types=('Projection'), # specify portal type names here ('Example Type',)
+        allowed_types=('Projection'),
         multiValued=False,
     ),
 
@@ -52,160 +52,6 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
         relationship='lucscenario_subregions',
         allowed_types=('Projection'),
         multiValued=True,
-    ),
-
-
-    atapi.ReferenceField(
-        'starting_scenario',
-        storage=atapi.AnnotationStorage(),
-        widget=ReferenceBrowserWidget(
-            allow_browse=1,
-            allow_search=1,
-            label=_(u"Starting Scenario"),
-            description=_(u"Select existing scenario if the new scenario will build upon previous model results."),
-        ),
-        relationship='lucscenario_starting_scenario',
-        allowed_types=('LUCScenario'),
-        multiValued=False,
-    ),
-
-
-    atapi.IntegerField(
-        'syear',
-        storage=atapi.AnnotationStorage(),
-        widget=atapi.IntegerWidget(
-            label=_(u"Starting Year"),
-            description=_(u"Enter the starting year of the scenario."),
-        ),
-        required=True,
-        default=_(u"2010"),
-        validators=('isInt'),
-    ),
-
-
-    atapi.ReferenceField(
-        'tdm',
-        storage=atapi.AnnotationStorage(),
-        widget=ReferenceBrowserWidget(
-            allow_browse=1,
-            allow_search=0,
-            startup_directory='/luc/transportation',
-            label=_(u"Travel Demand Model Transportation Network"),
-            description=_(u"Select a transportation network that has been generated from a travel demand model."),
-        ),
-        required=True,
-        relationship='lucscenario_tdm',
-        allowed_types=('SimMap'),
-        multiValued=False,
-    ),
-
-
-    atapi.ReferenceField(
-        'roads',
-        storage=atapi.AnnotationStorage(),
-        widget=ReferenceBrowserWidget(
-            allow_browse=1,
-            allow_search=0,
-            startup_directory='/luc/transportation',
-            label=_(u"Additional Roads"),
-            description=_(u"Select a GIS layer that contains any roads not included in the TDM network."),
-        ),
-        relationship='lucscenario_roads',
-        allowed_types=('SimMap'),
-        multiValued=False,
-    ),
-
-
-    atapi.ReferenceField(
-        'transit',
-        storage=atapi.AnnotationStorage(),
-        widget=ReferenceBrowserWidget(
-            allow_browse=1,
-            allow_search=0,
-            startup_directory='/luc/transportation',
-            label=_(u"Transit Networks"),
-            description=_(u"Select one or more GIS layers containing regional or local transite networks."),
-        ),
-        visible={'view': 'hidden', 'edit': 'hidden'},
-        relationship='lucscenario_transit',
-        allowed_types=('SimMap'),
-        multiValued=True,
-    ),
-
-
-    atapi.ReferenceField(
-        'nogrowth',
-        storage=atapi.AnnotationStorage(),
-        widget=ReferenceBrowserWidget(
-            allow_browse=1,
-            allow_search=1,
-            startup_directory='/luc/nogrowth',
-            label=_(u"No Growth Maps"),
-            description=_(u"Select one or more GIS layers.  These areas will be protected from model development."),
-        ),
-        relationship='lucscenario_nogrowth',
-        allowed_types=('SimMap'),
-        multiValued=True,
-    ),
-
-
-    atapi.ReferenceField(
-        'landuse',
-        storage=atapi.AnnotationStorage(),
-        widget=ReferenceBrowserWidget(
-            label=_(u"Initial Land Use Map"),
-            description=_(u"Provide an initial land use map for the scenario.  Unused if a Starting Scenario is provided."),
-            startup_directory='/luc/landuse',
-        ),
-        required=True,
-        relationship='lucscenario_landuse',
-        allowed_types=('SimMap'),
-        multiValued=False,
-    ),
-
-
-    atapi.ReferenceField(
-        'popcenters',
-        storage=atapi.AnnotationStorage(),
-        widget=ReferenceBrowserWidget(
-            label=_(u"City and Population Centers"),
-            description=_(u"Select the GIS layer with city centers."),
-            startup_directory='/luc/attractors',
-        ),
-        required=True,
-        relationship='lucscenario_popcenters',
-        allowed_types=('SimMap'), # specify portal type names here ('Example Type',)
-        multiValued=False,
-    ),
-
-
-    atapi.ReferenceField(
-        'empcenters',
-        storage=atapi.AnnotationStorage(),
-        widget=ReferenceBrowserWidget(
-            label=_(u"Employment Centers"),
-            description=_(u"Select a GIS layer containing employeers and employmment centers."),
-            startup_directory='/luc/attractors',
-        ),
-        required=True,
-        relationship='lucscenario_empcenter',
-        allowed_types=('SimMap'),
-        multiValued=False,
-    ),
-
-
-    atapi.ReferenceField(
-        'dem',
-        storage=atapi.AnnotationStorage(),
-        widget=ReferenceBrowserWidget(
-            label=_(u"Digital Elevation Map"),
-            description=_(u"Select a GIS layer that provides regional elevation."),
-            startup_directory='/luc/landuse',
-        ),
-        required=True,
-        relationship='lucscenario_dem',
-        allowed_types=('SimMap'),
-        multiValued=False,
     ),
 
 
@@ -271,6 +117,16 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
         default=_(u"http://datacenter.leamgroup.com/svn/desktop/ewg_luc/trunk"),
     ),
 
+    atapi.StringField(
+        'gis',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.StringWidget(
+            label=_(u"GIS repository"),
+            description=_(u"a predefined GRASS location used by the model"),
+            visible={'view': 'hidden', 'edit': 'hidden'},
+        ),
+        required=True,
+    ),
 
 ))
 
@@ -299,6 +155,12 @@ class LUCScenario(folder.ATFolder):
     description = atapi.ATFieldProperty('description')
 
     # -*- Your ATSchema to Python Property Bridges Here ... -*-
+    merge = atapi.ATReferenceFieldProperty('merge')
+
+    probmaps = atapi.ATReferenceFieldProperty('probmaps')
+
+    gis = atapi.ATFieldProperty('gis')
+
     cmdline = atapi.ATFieldProperty('cmdline')
 
     repository = atapi.ATFieldProperty('repository')
@@ -309,29 +171,16 @@ class LUCScenario(folder.ATFolder):
 
     runstatus = atapi.ATFieldProperty('runstatus')
 
-    roads = atapi.ATReferenceFieldProperty('roads')
-
-    transit = atapi.ATReferenceFieldProperty('transit')
-
-    tdm = atapi.ATReferenceFieldProperty('tdm')
-
-    nogrowth = atapi.ATReferenceFieldProperty('nogrowth')
-
-    empcenters = atapi.ATReferenceFieldProperty('empcenters')
-
-    popcenters = atapi.ATReferenceFieldProperty('popcenters')
-
-    dem = atapi.ATReferenceFieldProperty('dem')
-
-    landuse = atapi.ATReferenceFieldProperty('landuse')
-
-    syear = atapi.ATFieldProperty('syear')
-
-    starting_scenario = atapi.ATReferenceFieldProperty('starting_scenario')
-
     subregions = atapi.ATReferenceFieldProperty('subregions')
 
     region = atapi.ATReferenceFieldProperty('region')
+
+
+    security.declarePublic('requeue')
+    def requeue(self):
+        """simple method to requeue the scenario"""
+        self.runstatus = 'queued'
+        self.reindexObject(['runstatus',])
 
     security.declarePublic('getConfig')
     def getConfig(self):
@@ -349,57 +198,20 @@ class LUCScenario(folder.ATFolder):
         tag.text = self.getCmdline()
 
         # regions to be modeled
-        tag = SubElement(tree, 'region')
-        tag.text = self.getRegion().absolute_url() + '/getGraph'
+        tree.append(fromstring(self.getRegion().getConfig()))
         reg = SubElement(tree, 'subregions')
         for p in self.getSubregions():
-            tag = SubElement(reg, 'region')
-            tag.text = p.absolute_url() + '/getGraph'
-
-        tag = SubElement(tree,'starting_year')
-        tag.text = str(self.getSyear())
-
-        # setup Starting Scenario
-        if self.getStarting_scenario():
-            tag = SubElemennt(tree, 'starting_scenario')
-            tag.text = self.getStarting_scenario().absolute_url()
-
-        tag = SubElement(tree, 'tdm_network')
-        tag.text = self.getTdm().absolute_url() + '/get_layer'
-        tag = SubElement(tree, 'road_network')
-        tag.text = self.getRoads().absolute_url() + '/get_layer'
-
-        if self.getTransit():
-            tag = SubElement(tree, 'transit_network')
-            tag.text = self.getTransit().absolute_url() + '/get_layer'
-
-        # setup nogrowth layers if any
-        reg = SubElement(tree, 'no_growth_layers')
-        for s in  self.getNogrowth():
-            tag = SubElement(reg, 'no_growth')
-            tag.text = s.absolute_url() + '/get_layer'
-
-        # basic drivers
-        tag = SubElement(tree, 'landuse')
-        tag.text = self.getLanduse().absolute_url() + '/get_layer'
-
-        tag = SubElement(tree, 'dem')
-        tag.text = self.getDem().absolute_url() + '/get_layer'
-
-        tag = SubElement(tree, 'popcenters')
-        tag.text = self.getPopcenters().absolute_url() + '/get_layer'
-
-        tag = SubElement(tree, 'empcenters')
-        tag.text = self.getEmpcenters().absolute_url() + '/get_layer'
+            reg.append(fromstring(p.getConfig()))
 
         # current scenario for results
         tag = SubElement(tree, 'results')
         tag.text = self.absolute_url()
         
-        
-        self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/xml')
-        return tostring(tree)
-        
+        self.REQUEST.RESPONSE.setHeader('Content-Type',
+            'application/xml;;charset=UTF-8')
+        self.REQUEST.RESPONSE.setHeader('Content-Disposition',
+            'attachment; filename="%s_scenario.xml"' % self.title)
+        return tostring(tree, encoding='UTF-8')
 
 
 atapi.registerType(LUCScenario, PROJECTNAME)
