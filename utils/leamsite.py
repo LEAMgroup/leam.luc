@@ -298,7 +298,8 @@ class LEAMsite:
     # Puts SimMaps on to the site
     def putSimMap(self, simmap, mapfile, url,
                   simmap_file=None, mapfile_file=None,
-                  title=None, trans=.7, details=None, zoom=11):
+                  title=None, description=None, 
+                  trans=.7, details=None, zoom=11):
         """ putSimMap
         Required Input: simmap, mapfile, url
           simmap is a file that contains the desired GIS layer
@@ -325,6 +326,7 @@ class LEAMsite:
                         path.basename(simmap), "simImage_file")
         self.b.add_file(mapfile_file, 'application/octet-stream', 
                         path.basename(mapfile), "mapFile_file")        
+        if description: self.b['description'] = str(description)
         self.b['transparency'] = str(trans)
         self.b['zoom'] = str(zoom)
         if details: self.b['details'] = str(details)

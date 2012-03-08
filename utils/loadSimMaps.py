@@ -4,12 +4,14 @@ from os.path import walk
 from leamsite import LEAMsite
 
 pathmap = {
-    'subregional-maps': 'subregional',
-    'no-growth-maps': 'nogrowth',
-    'transportation-network': 'transportation',
-    'regional-attractors': 'attractors',
-    'initial-landuse': 'landuse',
-    'special-drivers': 'specials',
+    'subregional-maps': 'projections/subregional',
+    'no-growth-maps': 'drivers/nogrowth',
+    'transportation-network': 'drivers/transportation',
+    'cities-attractor': 'drivers/attractors',
+    'employment-attractor': 'drivers/attractors',
+    'regional-attractors': 'drivers/attractors',
+    'initial-landuse': 'drivers/grids',
+    'special-drivers': 'drivers/specials',
     }
 
 
