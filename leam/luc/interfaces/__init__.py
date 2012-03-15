@@ -1,2 +1,4 @@
 # -*- extra stuff goes here -*-
+from projection import IProjection
+from probmap import IProbmap
 from lucscenario import ILUCScenario

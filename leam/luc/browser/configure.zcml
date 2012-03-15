@@ -7,4 +7,11 @@
 
   <!-- -*- extra stuff goes here -*- -->
 
+    <browser:page
+        for="*"
+        name="pop_queue"
+        class=".queue.PopQueue"
+        permission="zope2.View"
+        />
+
 </configure>

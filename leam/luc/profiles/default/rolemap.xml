@@ -2,6 +2,14 @@
 <rolemap>
   <permissions>
     <!-- -*- extra stuff goes here -*- -->
+    <permission name="leam.luc: Add Projection" acquire="False">
+      <role name="Manager" />
+      <role name="Contributor" />
+    </permission>
+    <permission name="leam.luc: Add Probmap" acquire="False">
+      <role name="Manager" />
+      <role name="Contributor" />
+    </permission>
     <permission name="leam.luc: Add LUC Scenario" acquire="False">
       <role name="Manager" />
       <role name="Contributor" />

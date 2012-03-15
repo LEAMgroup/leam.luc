@@ -10,6 +10,8 @@
 <object name="portal_factory" meta_type="Plone Factory Tool">
   <factorytypes>
     <!-- -*- extra stuff goes here -*- -->
+    <type portal_type="Projection" />
+    <type portal_type="Probmap" />
     <type portal_type="LUC Scenario" />
   </factorytypes>
 </object>

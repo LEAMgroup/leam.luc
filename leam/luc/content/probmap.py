@@ -11,7 +11,7 @@ from Products.Archetypes import atapi
 from Products.ATContentTypes.content import base
 from Products.ATContentTypes.content import schemata
 
-from plone.app.blob.field import BlobField
+from plone.app.blob.field import FileField
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 
 # -*- Message Factory Imported Here -*-
@@ -43,7 +43,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             allow_browse=1,
             allow_search=1,
-            startup_directory='/luc/transportation',
+            startup_directory='/luc/drivers/transportation',
             label=_(u"Travel Demand Model Transportation Network"),
             description=_(u"Select a transportation network that has been generated from a travel demand model."),
         ),
@@ -60,7 +60,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             allow_browse=1,
             allow_search=1,
-            startup_directory='/luc/transportation',
+            startup_directory='/luc/drivers/transportation',
             label=_(u"Additional Roads"),
             description=_(u"Select a GIS layer that contains any roads not included in the TDM network."),
         ),
@@ -77,7 +77,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
 #            visible={'view': 'hidden', 'edit': 'hidden'},
 #            allow_browse=1,
 #            allow_search=1,
-#            startup_directory='/luc/transportation',
+#            startup_directory='/luc/drivers/transportation',
 #
 #            label=_(u"Transit Networks"),
 #            description=_(u"Select one or more GIS layers containing regional or local transit networks."),
@@ -94,7 +94,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             allow_browse=1,
             allow_search=1,
-            startup_directory='/luc/specials',
+            startup_directory='/luc/drivers/specials',
             label=_(u"Zonal Drivers"),
             description=_(u"Select one or more GIS layers.  Drivers modify the probability map in the uniform way."),
         ),
@@ -110,7 +110,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             allow_browse=1,
             allow_search=1,
-            startup_directory='/luc/nogrowth',
+            startup_directory='/luc/drivers/nogrowth',
             label=_(u"No Growth Maps"),
             description=_(u"Select one or more GIS layers.  These areas will be protected from model development."),
         ),
@@ -126,7 +126,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             label=_(u"City and Population Centers"),
             description=_(u"Select the GIS layer with city centers."),
-            startup_directory='/luc/attractors',
+            startup_directory='/luc/drivers/attractors',
         ),
         required=True,
         relationship='probmap_popcenters',
@@ -141,7 +141,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             label=_(u"Employment Centers"),
             description=_(u"Select a GIS layer containing employeers and employmment centers."),
-            startup_directory='/luc/attractors',
+            startup_directory='/luc/drivers/attractors',
         ),
         required=True,
         relationship='probmap_empcenters',
@@ -156,7 +156,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             label=_(u"Initial Land Use Map"),
             description=_(u"Provide an initial land use map for the scenario.  Unused if a Starting Scenario is provided."),
-            startup_directory='/luc/grids',
+            startup_directory='/luc/drivers/grids',
         ),
         required=True,
         relationship='probmap_landuse',
@@ -171,7 +171,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             label=_(u"Digital Elevation Map"),
             description=_(u"Select a GIS layer that provides regional elevation."),
-            startup_directory='/luc/grids',
+            #startup_directory='/luc/drivers',
         ),
         required=True,
         relationship='probmap_dem',
@@ -186,7 +186,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             label=_(u"Probmap View"),
             description=_(u"A SimMap view visualzing the Probmap."),
-            startup_directory='/luc/probmaps',
+            startup_directory='/luc/drivers',
         ),
         relationship='probmap_probview',
         allowed_types=('SimMap'),
@@ -194,7 +194,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
     ),
 
 
-    BlobField(
+    FileField(
         'probfile',
         storage=atapi.AnnotationStorage(),
         widget=atapi.FileWidget(
@@ -251,48 +251,45 @@ class Probmap(base.ATCTContent):
 
     probfile = atapi.ATFieldProperty('probfile')
 
+    def _simmap(self, obj):
+        """returns URL of the simImage download"""
+        return obj.absolute_url() + '/at_download/simImage'
 
     security.declarePublic('getConfig')
     def getConfig(self):
         """Generate a configuration file for the Probmap"""
+        #import pdb; pdb.set_trace()
 
         tree = Element('probmap')
 
-        tag = SubElement(tree, 'title')
-        tag.text = self.title
-        tag = SubElement(tree, 'tdm')
-        tag.text = self.tdm.absolute_url() + '/get_layer'
-        tag = SubElement(tree, 'roads')
-        tag.text = self.roads.absolute_url() + '/get_layer'
+        SubElement(tree, 'id').text = self.id
+        SubElement(tree, 'title').text = self.title
+        SubElement(tree, 'year').text = str(self.year)
+        SubElement(tree, 'download').text = self.absolute_url() + \
+            '/at_download/probfile'
 
-        tags = SubElement(tree, 'drivers')
+        SubElement(tree, 'tdm').text = self._simmap(self.tdm)
+        SubElement(tree, 'roads').text = self._simmap(self.roads)
+
+        e = SubElement(tree, 'drivers')
         for s in self.drivers:
-            tag = SubElement(tags, 'driver')
-            tag.text = s.absolute_url() + '/get_layer'
+            SubElement(e, 'driver').text = self._simmap(s)
         
-        tags = SubElement(tree, 'nogrowth_maps')
+        e = SubElement(tree, 'nogrowth_maps')
         for s in self.nogrowth:
-            tag = SubElement(tags, 'nogrowth')
-            tag.text = s.absolute_url() + '/get_layer'
+            SubElement(e, 'nogrowth').text = self._simmap(s)
         
-        tags = SubElement(tree, 'empcenters')
+        e = SubElement(tree, 'empcenters')
         for s in self.empcenters:
-            tag = SubElement(tags, 'empcenter')
-            tag.text = s.absolute_url() + '/get_layer'
+            SubElement(e, 'empcenter').text = self._simmap(s)
         
-        tags = SubElement(tree, 'popcenters')
+        e = SubElement(tree, 'popcenters')
         for s in self.popcenters:
-            tag = SubElement(tags, 'popcenter')
-            tag.text = s.absolute_url() + '/get_layer'
+            SubElement(e, 'popcenter').text = self._simmap(s)
 
-        tag = SubElement(tree, 'landuse')
-        tag.text = self.landuse.absolute_url() + '/get_layer'
-        tag = SubElement(tree, 'dem')
-        tag.text = self.dem.absolute_url() + '/get_layer'
+        SubElement(tree, 'landuse').text = self._simmap(self.landuse)
 
-        if self.probfile:
-            tag = SubElement(tree, 'probfile')
-            tag.text = self.probfile.absolute_url() + '/at_download'
+        #SubElement(tree, 'dem').text = self._simmap(self.dem)
 
         self.REQUEST.RESPONSE.setHeader('Content-Type',
             'application/xml;;charset=UTF-8')

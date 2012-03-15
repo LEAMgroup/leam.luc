@@ -48,6 +48,252 @@ Finally, let's return to the front page of our site before continuing
     >>> browser.open(portal_url)
 
 -*- extra stuff goes here -*-
+The Projection content type
+===============================
+
+In this section we are tesing the Projection content type by performing
+basic operations like adding, updadating and deleting Projection content
+items.
+
+Adding a new Projection content item
+--------------------------------
+
+We use the 'Add new' menu to add a new content item.
+
+    >>> browser.getLink('Add new').click()
+
+Then we select the type of item we want to add. In this case we select
+'Projection' and click the 'Add' button to get to the add form.
+
+    >>> browser.getControl('Projection').click()
+    >>> browser.getControl(name='form.button.Add').click()
+    >>> 'Projection' in browser.contents
+    True
+
+Now we fill the form and submit it.
+
+    >>> browser.getControl(name='title').value = 'Projection Sample'
+    >>> browser.getControl('Save').click()
+    >>> 'Changes saved' in browser.contents
+    True
+
+And we are done! We added a new 'Projection' content item to the portal.
+
+Updating an existing Projection content item
+---------------------------------------
+
+Let's click on the 'edit' tab and update the object attribute values.
+
+    >>> browser.getLink('Edit').click()
+    >>> browser.getControl(name='title').value = 'New Projection Sample'
+    >>> browser.getControl('Save').click()
+
+We check that the changes were applied.
+
+    >>> 'Changes saved' in browser.contents
+    True
+    >>> 'New Projection Sample' in browser.contents
+    True
+
+Removing a/an Projection content item
+--------------------------------
+
+If we go to the home page, we can see a tab with the 'New Projection
+Sample' title in the global navigation tabs.
+
+    >>> browser.open(portal_url)
+    >>> 'New Projection Sample' in browser.contents
+    True
+
+Now we are going to delete the 'New Projection Sample' object. First we
+go to the contents tab and select the 'New Projection Sample' for
+deletion.
+
+    >>> browser.getLink('Contents').click()
+    >>> browser.getControl('New Projection Sample').click()
+
+We click on the 'Delete' button.
+
+    >>> browser.getControl('Delete').click()
+    >>> 'Item(s) deleted' in browser.contents
+    True
+
+So, if we go back to the home page, there is no longer a 'New Projection
+Sample' tab.
+
+    >>> browser.open(portal_url)
+    >>> 'New Projection Sample' in browser.contents
+    False
+
+Adding a new Projection content item as contributor
+------------------------------------------------
+
+Not only site managers are allowed to add Projection content items, but
+also site contributors.
+
+Let's logout and then login as 'contributor', a portal member that has the
+contributor role assigned.
+
+    >>> browser.getLink('Log out').click()
+    >>> browser.open(portal_url + '/login_form')
+    >>> browser.getControl(name='__ac_name').value = 'contributor'
+    >>> browser.getControl(name='__ac_password').value = default_password
+    >>> browser.getControl(name='submit').click()
+    >>> browser.open(portal_url)
+
+We use the 'Add new' menu to add a new content item.
+
+    >>> browser.getLink('Add new').click()
+
+We select 'Projection' and click the 'Add' button to get to the add form.
+
+    >>> browser.getControl('Projection').click()
+    >>> browser.getControl(name='form.button.Add').click()
+    >>> 'Projection' in browser.contents
+    True
+
+Now we fill the form and submit it.
+
+    >>> browser.getControl(name='title').value = 'Projection Sample'
+    >>> browser.getControl('Save').click()
+    >>> 'Changes saved' in browser.contents
+    True
+
+Done! We added a new Projection content item logged in as contributor.
+
+Finally, let's login back as manager.
+
+    >>> browser.getLink('Log out').click()
+    >>> browser.open(portal_url + '/login_form')
+    >>> browser.getControl(name='__ac_name').value = portal_owner
+    >>> browser.getControl(name='__ac_password').value = default_password
+    >>> browser.getControl(name='submit').click()
+    >>> browser.open(portal_url)
+
+
+The Probmap content type
+===============================
+
+In this section we are tesing the Probmap content type by performing
+basic operations like adding, updadating and deleting Probmap content
+items.
+
+Adding a new Probmap content item
+--------------------------------
+
+We use the 'Add new' menu to add a new content item.
+
+    >>> browser.getLink('Add new').click()
+
+Then we select the type of item we want to add. In this case we select
+'Probmap' and click the 'Add' button to get to the add form.
+
+    >>> browser.getControl('Probmap').click()
+    >>> browser.getControl(name='form.button.Add').click()
+    >>> 'Probmap' in browser.contents
+    True
+
+Now we fill the form and submit it.
+
+    >>> browser.getControl(name='title').value = 'Probmap Sample'
+    >>> browser.getControl('Save').click()
+    >>> 'Changes saved' in browser.contents
+    True
+
+And we are done! We added a new 'Probmap' content item to the portal.
+
+Updating an existing Probmap content item
+---------------------------------------
+
+Let's click on the 'edit' tab and update the object attribute values.
+
+    >>> browser.getLink('Edit').click()
+    >>> browser.getControl(name='title').value = 'New Probmap Sample'
+    >>> browser.getControl('Save').click()
+
+We check that the changes were applied.
+
+    >>> 'Changes saved' in browser.contents
+    True
+    >>> 'New Probmap Sample' in browser.contents
+    True
+
+Removing a/an Probmap content item
+--------------------------------
+
+If we go to the home page, we can see a tab with the 'New Probmap
+Sample' title in the global navigation tabs.
+
+    >>> browser.open(portal_url)
+    >>> 'New Probmap Sample' in browser.contents
+    True
+
+Now we are going to delete the 'New Probmap Sample' object. First we
+go to the contents tab and select the 'New Probmap Sample' for
+deletion.
+
+    >>> browser.getLink('Contents').click()
+    >>> browser.getControl('New Probmap Sample').click()
+
+We click on the 'Delete' button.
+
+    >>> browser.getControl('Delete').click()
+    >>> 'Item(s) deleted' in browser.contents
+    True
+
+So, if we go back to the home page, there is no longer a 'New Probmap
+Sample' tab.
+
+    >>> browser.open(portal_url)
+    >>> 'New Probmap Sample' in browser.contents
+    False
+
+Adding a new Probmap content item as contributor
+------------------------------------------------
+
+Not only site managers are allowed to add Probmap content items, but
+also site contributors.
+
+Let's logout and then login as 'contributor', a portal member that has the
+contributor role assigned.
+
+    >>> browser.getLink('Log out').click()
+    >>> browser.open(portal_url + '/login_form')
+    >>> browser.getControl(name='__ac_name').value = 'contributor'
+    >>> browser.getControl(name='__ac_password').value = default_password
+    >>> browser.getControl(name='submit').click()
+    >>> browser.open(portal_url)
+
+We use the 'Add new' menu to add a new content item.
+
+    >>> browser.getLink('Add new').click()
+
+We select 'Probmap' and click the 'Add' button to get to the add form.
+
+    >>> browser.getControl('Probmap').click()
+    >>> browser.getControl(name='form.button.Add').click()
+    >>> 'Probmap' in browser.contents
+    True
+
+Now we fill the form and submit it.
+
+    >>> browser.getControl(name='title').value = 'Probmap Sample'
+    >>> browser.getControl('Save').click()
+    >>> 'Changes saved' in browser.contents
+    True
+
+Done! We added a new Probmap content item logged in as contributor.
+
+Finally, let's login back as manager.
+
+    >>> browser.getLink('Log out').click()
+    >>> browser.open(portal_url + '/login_form')
+    >>> browser.getControl(name='__ac_name').value = portal_owner
+    >>> browser.getControl(name='__ac_password').value = default_password
+    >>> browser.getControl(name='submit').click()
+    >>> browser.open(portal_url)
+
+
 The LUC Scenario content type
 ===============================
 

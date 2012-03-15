@@ -21,36 +21,69 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
 
     # -*- Your Archetypes field definitions here ... -*-
 
-
     atapi.ReferenceField(
-        'region',
+        'growth',
         storage=atapi.AnnotationStorage(),
         widget=ReferenceBrowserWidget(
             allow_browse=1,
             allow_search=0,
             startup_directory='/luc/projections',
-            label=_(u"Regional Projection"),
-            description=_(u"Identify the study area and a baseline population and employment projection."),
+            label=_(u"Growth Projections"),
+            description=_(u"Identify one or more growth Projection"),
         ),
-        required=True,
-        relationship='lucscenario_region',
+        required=False,
+        relationship='lucscenario_growth',
         allowed_types=('Projection'),
-        multiValued=False,
+        multiValued=True,
     ),
 
 
     atapi.ReferenceField(
-        'subregions',
+        'growthmap',
+        storage=atapi.AnnotationStorage(),
+        widget=ReferenceBrowserWidget(
+            allow_browse=1,
+            allow_search=0,
+            startup_directory='/luc/drivers',
+            label=_(u"Growth Drivers"),
+            description=_(u"Identify one or more sets of drivers."),
+        ),
+        required=False,
+        relationship='lucscenario_growthmap',
+        allowed_types=('Driver Set'),
+        multiValued=True,
+    ),
+
+
+    atapi.ReferenceField(
+        'decline',
         storage=atapi.AnnotationStorage(),
         widget=ReferenceBrowserWidget(
             allow_browse=1,
             allow_search=0,
             startup_directory='/luc/projections',
-            label=_(u"Sub-Regional Projections"),
+            label=_(u"Decline Projections"),
             description=_(u"Add as many subregional projections as needed."),
         ),
-        relationship='lucscenario_subregions',
+        required=False,
+        relationship='lucscenario_decline',
         allowed_types=('Projection'),
+        multiValued=True,
+    ),
+
+    atapi.ReferenceField(
+        'declinemap',
+        storage=atapi.AnnotationStorage(),
+        widget=ReferenceBrowserWidget(
+            allow_browse=1,
+            allow_search=0,
+            startup_directory='/luc/drivers',
+            label=_(u"Vacancy Drivers"),
+            description=_(u"Identify one or more sets of drivers."),
+        ),
+        required=False,
+        relationship='lucscenario_declinemap',
+        allowed_types=('Driver Set'),
         multiValued=True,
     ),
 
@@ -155,10 +188,6 @@ class LUCScenario(folder.ATFolder):
     description = atapi.ATFieldProperty('description')
 
     # -*- Your ATSchema to Python Property Bridges Here ... -*-
-    merge = atapi.ATReferenceFieldProperty('merge')
-
-    probmaps = atapi.ATReferenceFieldProperty('probmaps')
-
     gis = atapi.ATFieldProperty('gis')
 
     cmdline = atapi.ATFieldProperty('cmdline')
@@ -171,9 +200,13 @@ class LUCScenario(folder.ATFolder):
 
     runstatus = atapi.ATFieldProperty('runstatus')
 
-    subregions = atapi.ATReferenceFieldProperty('subregions')
+    growth = atapi.ATReferenceFieldProperty('growth')
 
-    region = atapi.ATReferenceFieldProperty('region')
+    growthmap = atapi.ATReferenceFieldProperty('growthmap')
+
+    decline = atapi.ATReferenceFieldProperty('decline')
+
+    declinemap = atapi.ATReferenceFieldProperty('declinemap')
 
 
     security.declarePublic('requeue')
@@ -181,37 +214,42 @@ class LUCScenario(folder.ATFolder):
         """simple method to requeue the scenario"""
         self.runstatus = 'queued'
         self.reindexObject(['runstatus',])
+        return "requeue"
 
     security.declarePublic('getConfig')
     def getConfig(self):
         """Returns the cconfiguration necessary for running the model"""
         #import pdb; pdb.set_trace()
 
-        tree = Element('model')
-        tag = SubElement(tree, 'title')
-        tag.text = self.title
+        model = Element('model')
+        tree = SubElement(model, 'scenario')
+        SubElement(tree, 'id').text = self.id
+        SubElement(tree, 'title').text = self.title
+        SubElement(tree, 'results').text = self.absolute_url()
 
-        # model startup
-        tag = SubElement(tree, 'repository')
-        tag.text = self.getRepository()
-        tag = SubElement(tree, 'cmdline')
-        tag.text = self.getCmdline()
+        SubElement(tree, 'repository').text = self.getRepository()
+        SubElement(tree, 'cmdline').text = self.getCmdline()
 
         # regions to be modeled
-        tree.append(fromstring(self.getRegion().getConfig()))
-        reg = SubElement(tree, 'subregions')
-        for p in self.getSubregions():
+        reg = SubElement(tree, 'growth')
+        for p in self.getGrowth():
+            reg.append(fromstring(p.getConfig()))
+        reg = SubElement(tree, 'growthmap')
+        for p in self.getGrowthmap():
             reg.append(fromstring(p.getConfig()))
 
-        # current scenario for results
-        tag = SubElement(tree, 'results')
-        tag.text = self.absolute_url()
-        
+        reg = SubElement(tree, 'decline')
+        for p in self.getDecline():
+            reg.append(fromstring(p.getConfig()))
+        reg = SubElement(tree, 'declinemap')
+        for p in self.getDeclinemap():
+            reg.append(fromstring(p.getConfig()))
+
         self.REQUEST.RESPONSE.setHeader('Content-Type',
             'application/xml;;charset=UTF-8')
         self.REQUEST.RESPONSE.setHeader('Content-Disposition',
             'attachment; filename="%s_scenario.xml"' % self.title)
-        return tostring(tree, encoding='UTF-8')
+        return tostring(model, encoding='UTF-8')
 
 
 atapi.registerType(LUCScenario, PROJECTNAME)
