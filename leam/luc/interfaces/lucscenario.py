@@ -5,28 +5,8 @@ from zope import schema
 from leam.luc import lucMessageFactory as _
 
 
-
 class ILUCScenario(Interface):
     """LEAM Land Use Change (LUC) Scenario"""
-
-    # -*- schema definition goes here -*-
-    gis = schema.TextLine(
-        title=_(u"GIS repository"),
-        required=True,
-        description=_(u"a predefined GRASS location used by the model"),
-    )
-#
-    cmdline = schema.TextLine(
-        title=_(u"Command line to begin execution after checkout of repository."),
-        required=True,
-        description=_(u"blah"),
-    )
-#
-    repository = schema.TextLine(
-        title=_(u"Code Repository"),
-        required=True,
-        description=_(u"The subversion repository containing necessary run time files."),
-    )
 #
     end_time = schema.Date(
         title=_(u"End Time"),

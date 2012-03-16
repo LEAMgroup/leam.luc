@@ -3,6 +3,8 @@
 from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 
 from zope.interface import implements
+from zope.component import getUtility
+from plone.registry.interfaces import IRegistry
 
 from AccessControl import ClassSecurityInfo
 
@@ -14,7 +16,7 @@ from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 # -*- Message Factory Imported Here -*-
 from leam.luc import lucMessageFactory as _
 
-from leam.luc.interfaces import ILUCScenario
+from leam.luc.interfaces import ILUCScenario,ILUCSettings
 from leam.luc.config import PROJECTNAME
 
 LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
@@ -62,7 +64,7 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
             allow_browse=1,
             allow_search=0,
             startup_directory='/luc/projections',
-            label=_(u"Decline Projections"),
+            label=_(u"Vacancy Projections"),
             description=_(u"Add as many subregional projections as needed."),
         ),
         required=False,
@@ -125,42 +127,6 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
     ),
 
 
-    atapi.StringField(
-        'cmdline',
-        storage=atapi.AnnotationStorage(),
-        widget=atapi.StringWidget(
-            label=_(u"Command line to begin execution after checkout of repository."),
-            description=_(u"blah"),
-            visible={'view': 'hidden', 'edit': 'hidden'},
-        ),
-        required=True,
-        default=_(u"startup.py"),
-    ),
-
-
-    atapi.StringField(
-        'repository',
-        storage=atapi.AnnotationStorage(),
-        widget=atapi.StringWidget(
-            label=_(u"Code Repository"),
-            description=_(u"The subversion repository containing necessary run time files."),
-            visible={'view': 'hidden', 'edit': 'hidden'},
-        ),
-        required=True,
-        default=_(u"http://datacenter.leamgroup.com/svn/desktop/ewg_luc/trunk"),
-    ),
-
-    atapi.StringField(
-        'gis',
-        storage=atapi.AnnotationStorage(),
-        widget=atapi.StringWidget(
-            label=_(u"GIS repository"),
-            description=_(u"a predefined GRASS location used by the model"),
-            visible={'view': 'hidden', 'edit': 'hidden'},
-        ),
-        required=True,
-    ),
-
 ))
 
 # Set storage on fields copied from ATFolderSchema, making sure
@@ -188,12 +154,6 @@ class LUCScenario(folder.ATFolder):
     description = atapi.ATFieldProperty('description')
 
     # -*- Your ATSchema to Python Property Bridges Here ... -*-
-    gis = atapi.ATFieldProperty('gis')
-
-    cmdline = atapi.ATFieldProperty('cmdline')
-
-    repository = atapi.ATFieldProperty('repository')
-
     end_time = atapi.ATFieldProperty('end_time')
 
     start_time = atapi.ATFieldProperty('start_time')
@@ -227,8 +187,11 @@ class LUCScenario(folder.ATFolder):
         SubElement(tree, 'title').text = self.title
         SubElement(tree, 'results').text = self.absolute_url()
 
-        SubElement(tree, 'repository').text = self.getRepository()
-        SubElement(tree, 'cmdline').text = self.getCmdline()
+        # get the repository from registry 
+        registry = getUtility(IRegistry)
+        settings = registry.forInterface(ILUCSettings)
+        SubElement(tree, 'repository').text = settings.scenario_repo
+        SubElement(tree, 'cmdline').text = settings.scenario_cmd
 
         # regions to be modeled
         reg = SubElement(tree, 'growth')

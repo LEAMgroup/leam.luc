@@ -52,7 +52,7 @@ ProjectionSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
     atapi.ReferenceField( 'zone',
         storage=atapi.AnnotationStorage(),
         widget=ReferenceBrowserWidget(
-            label=_(u"Effected Zone"),
+            label=_(u"Affected Zone"),
             description=_(u"A GIS layer defining the zone where the population and employment would effect."),
             startup_directory='/luc/projections/subregional'
         ),
