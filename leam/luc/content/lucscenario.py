@@ -1,6 +1,7 @@
 """Definition of the LUC Scenario content type
 """
 from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
+from Products.CMFCore.utils import getToolByName
 
 from zope.interface import implements
 from zope.component import getUtility
@@ -31,7 +32,7 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
             allow_search=0,
             startup_directory='/luc/projections',
             label=_(u"Growth Projections"),
-            description=_(u"Identify one or more growth Projection"),
+            description=_(u"Identify one or more growth projection."),
         ),
         required=False,
         relationship='lucscenario_growth',
@@ -176,6 +177,25 @@ class LUCScenario(folder.ATFolder):
         self.reindexObject(['runstatus',])
         return "requeue"
 
+
+    security.declarePublic('end_run')
+    def end_run(self):
+        """Mark the run as complete, set the end time, and set
+           default page to summary.
+           NEEDS WORK -- should set the endtime field, should set the
+           default page to the summary doc, should pass an arg that 
+           selects 'complete' or 'terminated'.
+           
+           more on setDefaultPage at https://svn.plone.org/svn/collective/CMFDynamicViewFTI/trunk/Products/CMFDynamicViewFTI/interfaces.py#L84
+        """
+        #import pdb; pdb.set_trace()
+        self.runstatus = 'complete'
+        self.reindexObject(['runstatus',])
+        
+        #self.setDefaultPage(obj)
+        return
+        
+
     security.declarePublic('getConfig')
     def getConfig(self):
         """Returns the cconfiguration necessary for running the model"""
@@ -207,6 +227,14 @@ class LUCScenario(folder.ATFolder):
         reg = SubElement(tree, 'declinemap')
         for p in self.getDeclinemap():
             reg.append(fromstring(p.getConfig()))
+
+        reg = SubElement(tree, 'postprocess')
+        #urltool = getToolByName(self.context, 'portal_url')
+        #portal = urltool.getPortalObject()
+        #zones = portal.luc.scenarios.subarearesults
+        #for p in zones.values():
+        #    SubElement(reg, 'zones').text = p.absolute_url() + \
+        #        '/at_download/simImage'
 
         self.REQUEST.RESPONSE.setHeader('Content-Type',
             'application/xml;;charset=UTF-8')

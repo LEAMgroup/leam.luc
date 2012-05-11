@@ -29,7 +29,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         storage=atapi.AnnotationStorage(),
         widget=atapi.IntegerWidget(
             label=_(u"Effective Year"),
-            description=_(u"First year the probmap will be used. Each driver given below should coorespond to this year."),
+            description=_(u"Each driver given below should correspond to this year."),
         ),
         required=True,
         default=_(u"2010"),
@@ -44,8 +44,8 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
             allow_browse=1,
             allow_search=1,
             startup_directory='/luc/drivers/transportation',
-            label=_(u"Travel Demand Model Transportation Network"),
-            description=_(u"Select a transportation network that has been generated from a travel demand model."),
+            label=_(u"TDM Transportation Network"),
+            #description=_(u""),
         ),
         required=True,
         relationship='probmap_tdm',
@@ -58,12 +58,14 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         'roads',
         storage=atapi.AnnotationStorage(),
         widget=ReferenceBrowserWidget(
+            visible={'view': 'hidden', 'edit': 'hidden'},
             allow_browse=1,
             allow_search=1,
             startup_directory='/luc/drivers/transportation',
             label=_(u"Additional Roads"),
-            description=_(u"Select a GIS layer that contains any roads not included in the TDM network."),
+            #description=_(u"Select a single GIS layer."),
         ),
+        required=False,
         relationship='probmap_roads',
         allowed_types=('SimMap'),
         multiValued=False,
@@ -78,15 +80,15 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
 #            allow_browse=1,
 #            allow_search=1,
 #            startup_directory='/luc/drivers/transportation',
-#
 #            label=_(u"Transit Networks"),
-#            description=_(u"Select one or more GIS layers containing regional or local transit networks."),
+#            #description=_(u"Select one or more GIS layers"),
 #        ),
+#        required=False,
 #        relationship='probmap_transit',
 #        allowed_types=('SimMap'),
 #        multiValued=True,
 #    ),
-
+#
 
     atapi.ReferenceField(
         'drivers',
@@ -95,9 +97,10 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
             allow_browse=1,
             allow_search=1,
             startup_directory='/luc/drivers/specials',
-            label=_(u"Zonal Drivers"),
-            description=_(u"Select one or more GIS layers.  Drivers modify the probability map in the uniform way."),
+            label=_(u"Special Drivers"),
+            #description=_(u"Select one or more GIS layers."),
         ),
+        required=False,
         relationship='probmap_driver',
         allowed_types=('SimMap'),
         multiValued=True,
@@ -112,8 +115,9 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
             allow_search=1,
             startup_directory='/luc/drivers/nogrowth',
             label=_(u"No Growth Maps"),
-            description=_(u"Select one or more GIS layers.  These areas will be protected from model development."),
+            #description=_(u"Select one or more GIS layers."),
         ),
+        required=False,
         relationship='probmap_nogrowth',
         allowed_types=('SimMap'),
         multiValued=True,
@@ -125,12 +129,12 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         storage=atapi.AnnotationStorage(),
         widget=ReferenceBrowserWidget(
             label=_(u"City and Population Centers"),
-            description=_(u"Select the GIS layer with city centers."),
+            #description=_(u"Select one or more GIS layer."),
             startup_directory='/luc/drivers/attractors',
         ),
         required=True,
         relationship='probmap_popcenters',
-        allowed_types=('SimMap'), # specify portal type names here ('Example Type',)
+        allowed_types=('SimMap'),
         multiValued=True,
     ),
 
@@ -140,7 +144,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         storage=atapi.AnnotationStorage(),
         widget=ReferenceBrowserWidget(
             label=_(u"Employment Centers"),
-            description=_(u"Select a GIS layer containing employeers and employmment centers."),
+            #description=_(u"Select one or more GIS layer."),
             startup_directory='/luc/drivers/attractors',
         ),
         required=True,
@@ -155,7 +159,7 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         storage=atapi.AnnotationStorage(),
         widget=ReferenceBrowserWidget(
             label=_(u"Initial Land Use Map"),
-            description=_(u"Provide an initial land use map for the scenario.  Unused if a Starting Scenario is provided."),
+            #description=_(u"Select a single GIS layer."),
             startup_directory='/luc/drivers/grids',
         ),
         required=True,
@@ -169,11 +173,12 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         'dem',
         storage=atapi.AnnotationStorage(),
         widget=ReferenceBrowserWidget(
+            visible={'view': 'hidden', 'edit': 'hidden'},
             label=_(u"Digital Elevation Map"),
-            description=_(u"Select a GIS layer that provides regional elevation."),
-            #startup_directory='/luc/drivers',
+            #description=_(u"Select a sigle GIS layer."),
+            startup_directory='/luc/drivers/grids',
         ),
-        required=True,
+        required=False,
         relationship='probmap_dem',
         allowed_types=('SimMap'),
         multiValued=False,
@@ -184,10 +189,12 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         'probview',
         storage=atapi.AnnotationStorage(),
         widget=ReferenceBrowserWidget(
+            visible={'view': 'hidden', 'edit': 'hidden'},
             label=_(u"Probmap View"),
-            description=_(u"A SimMap view visualzing the Probmap."),
+            #description=_(u"A SimMap view visualzing the Probmap."),
             startup_directory='/luc/drivers',
         ),
+        required=False,
         relationship='probmap_probview',
         allowed_types=('SimMap'),
         multiValued=False,
@@ -198,8 +205,9 @@ ProbmapSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         'probfile',
         storage=atapi.AnnotationStorage(),
         widget=atapi.FileWidget(
+            visible={'view': 'hidden', 'edit': 'visible'},
             label=_(u"Probmap File"),
-            description=_(u"Precomputed version of the probability map."),
+            #description=_(u"Precomputed version of the probability map."),
         ),
         required=False,
     ),
@@ -268,8 +276,13 @@ class Probmap(base.ATCTContent):
         SubElement(tree, 'download').text = self.absolute_url() + \
             '/at_download/probfile'
 
-        SubElement(tree, 'tdm').text = self._simmap(self.tdm)
-        SubElement(tree, 'roads').text = self._simmap(self.roads)
+        e = SubElement(tree, 'tdm')
+        if self.tdm:
+            e.text = self._simmap(self.tdm)
+
+        e = SubElement(tree, 'roads')
+        if self.roads:
+            e.text = self._simmap(self.roads)
 
         e = SubElement(tree, 'drivers')
         for s in self.drivers:
@@ -287,9 +300,13 @@ class Probmap(base.ATCTContent):
         for s in self.popcenters:
             SubElement(e, 'popcenter').text = self._simmap(s)
 
-        SubElement(tree, 'landuse').text = self._simmap(self.landuse)
+        e = SubElement(tree, 'landuse')
+        if self.landuse:
+            e.text = self._simmap(self.landuse)
 
-        #SubElement(tree, 'dem').text = self._simmap(self.dem)
+        e = SubElement(tree, 'dem')
+        if self.dem:
+            e.text = self._simmap(self.dem)
 
         self.REQUEST.RESPONSE.setHeader('Content-Type',
             'application/xml;;charset=UTF-8')

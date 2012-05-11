@@ -39,7 +39,7 @@ ProjectionSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
                   ],
         widget=DataGridWidget(
             label=_(u"Projection"),
-            description=_(u"Enter as many population and employment as necssary.  Intermediate values will be calculated automatically."),
+            description=_(u"Enter as many population and employment values as needed.  Intermediate values will be calculated automatically."),
             columns = {
                 'year': Column(_(u"Year"), default='2010'),
                 'pop': Column(_(u"Population"), default='0'),
@@ -52,8 +52,8 @@ ProjectionSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
     atapi.ReferenceField( 'zone',
         storage=atapi.AnnotationStorage(),
         widget=ReferenceBrowserWidget(
-            label=_(u"Affected Zone"),
-            description=_(u"A GIS layer defining the zone where the population and employment would effect."),
+            label=_(u"Effective Zone"),
+            description=_(u"Select a subregional map defining the effective modeling zone."),
             startup_directory='/luc/projections/subregional'
         ),
         relationship='projection_zone',
@@ -67,7 +67,7 @@ ProjectionSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             label=_(u"Population Density"),
             description=_(u"A GIS layer defining the new population density."),
-            startup_directory='/luc/projections/subregional',
+            startup_directory='/luc/projections/density',
         ),
         relationship='projection_pop_density',
         allowed_types = ('SimMap',),
@@ -80,7 +80,7 @@ ProjectionSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
         widget=ReferenceBrowserWidget(
             label=_(u"Employment Density"),
             description=_(u"A GIS layer defining the new employment density."),
-            startup_directory='/luc/projections/subregional',
+            startup_directory='/luc/projections/density',
         ),
         relationship='projection_emp_density',
         allowed_types = ('SimMap',),
@@ -143,13 +143,13 @@ class Projection(base.ATCTContent):
             '/at_download/simImage'
         SubElement(tree, 'redevelopment').text = str(self.redevelopment)
 
+        e = SubElement(tree, 'pop_density')
         if self.pop_density:
-            SubElement(tree, 'pop_density').text = \
-                self.pop_density.absolute_url() + '/at_download/simImage'
+            e.text = self.pop_density.absolute_url() + '/at_download/simImage'
 
+        e = SubElement(tree, 'emp_density')
         if self.emp_density:
-            SubElement(tree, 'emp_density').text = \
-                self.emp_density.absolute_url() + '/at_download/simImage'
+            e.text = self.emp_density.absolute_url() + '/at_download/simImage'
 
         self.REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
         self.REQUEST.RESPONSE.setHeader('Content-Disposition',
@@ -163,17 +163,16 @@ class Projection(base.ATCTContent):
         required format.
         """
         proj = StringIO()
-
         proj.write('# population and employment graph\n')
         proj.write('# title: %s\n' % self.title)
         proj.write('# url: %s\n' % self.absolute_url())
         proj.write('# spatial area: %s\n' % self.getZone().absolute_url())
         if self.pop_density:
             proj.write('# population density: %s\n' % \
-                self.pop_density().absolute_url())
+                self.pop_density.absolute_url())
         if self.emp_density:
             proj.write('# employment density: %s\n\n' % \
-                self.emp_density().absolute_url())
+                self.emp_density.absolute_url())
 
         proj.write('Population\n')
         for p in self.getProjection():

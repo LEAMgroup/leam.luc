@@ -4,7 +4,7 @@
    i18n:domain="leam.luc" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
   <property name="title" i18n:translate="">Driver Set</property>
   <property name="description"
-    i18n:translate="">a set of Drivers associated the LUC model</property>
+    i18n:translate="">a set of drivers associated with the LUC model</property>
   <property name="content_meta_type">Probmap</property>
   <property name="content_icon">document_icon.gif</property>
   <property name="product">leam.luc</property>
