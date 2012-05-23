@@ -17,7 +17,7 @@ from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 # -*- Message Factory Imported Here -*-
 from leam.luc import lucMessageFactory as _
 
-from leam.luc.interfaces import ILUCScenario,ILUCSettings
+from leam.luc.interfaces import ILUCScenario,ILUCSettings,IModel
 from leam.luc.config import PROJECTNAME
 
 LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
@@ -100,7 +100,7 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
             visible={'view': 'hidden', 'edit': 'hidden'},
         ),
         required=True,
-        default=_(u"queued"),
+        default="queued",
     ),
 
 
@@ -145,7 +145,7 @@ schemata.finalizeATCTSchema(
 
 class LUCScenario(folder.ATFolder):
     """LEAM Land Use Change (LUC) Scenario"""
-    implements(ILUCScenario)
+    implements(ILUCScenario, IModel)
 
     meta_type = "LUCScenario"
     schema = LUCScenarioSchema

@@ -6,7 +6,7 @@ from Products.Five import BrowserView
 from Products.CMFCore.utils import getToolByName
 
 from leam.luc import lucMessageFactory as _
-from leam.luc.interfaces import ILUCScenario
+from leam.luc.interfaces import IModel
 
 
 class IPopQueue(Interface):
@@ -38,11 +38,11 @@ class PopQueue(BrowserView):
         
         #import pdb; pdb.set_trace()
 
-        filter = { 'object_provides' : ILUCScenario.__identifier__,
+        filter = { 'object_provides' : IModel.__identifier__,
                    'runstatus' : 'queued'
                  }
+
         results = self.portal_catalog(filter, sort_on='modified')
-        #results = self.portal_catalog(runstatus='queued', sort_on='modified')
         if results:
             results[0].getObject().setRunstatus('running')
             results[0].getObject().reindexObject(['runstatus',])
