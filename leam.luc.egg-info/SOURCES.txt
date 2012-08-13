@@ -33,6 +33,7 @@ leam/luc/content/probmap.py
 leam/luc/content/projection.py
 leam/luc/interfaces/__init__.py
 leam/luc/interfaces/lucscenario.py
+leam/luc/interfaces/model.py
 leam/luc/interfaces/probmap.py
 leam/luc/interfaces/projection.py
 leam/luc/interfaces/settings.py
