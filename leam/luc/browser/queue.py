@@ -44,11 +44,26 @@ class PopQueue(BrowserView):
 
         results = self.portal_catalog(filter, sort_on='modified')
         if results:
+            try:
+                config = self.context.restrictedTraverse(
+                    results[0].getPath() + '/getConfig')
+                ret = config()
+
+            except Exception:
+                results[0].getObject().setRunstatus('error')
+                results[0].getObject().reindexObject(['runstatus',])
+
+                ret = Element('queue')                
+                ret.text = "ERROR"
+                self.request.RESPONSE.setHeader('Content-Type', 
+                    'application/xml;;charset=UTF-8')
+                return tostring(ret, encoding='UTF-8')
+
+            # return configuration
             results[0].getObject().setRunstatus('running')
             results[0].getObject().reindexObject(['runstatus',])
-            config = self.context.restrictedTraverse( \
-                    results[0].getPath() + '/getConfig')
-            return config()
+            return ret
+
         else:
             ret = Element('queue')
             ret.text = "EMPTY"
