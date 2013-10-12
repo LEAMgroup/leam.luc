@@ -198,17 +198,16 @@ class Projection(base.ATCTContent):
         required format normalized for decline.
         """
         proj = StringIO()
-
         proj.write('# population and employment graph\n')
         proj.write('# title: %s\n' % self.title)
         proj.write('# url: %s\n' % self.absolute_url())
         proj.write('# spatial area: %s\n' % self.getZone().absolute_url())
         if self.pop_density:
             proj.write('# population density: %s\n' % \
-                self.pop_density().absolute_url())
+                self.pop_density.absolute_url())
         if self.emp_density:
             proj.write('# employment density: %s\n\n' % \
-                self.emp_density().absolute_url())
+                self.emp_density.absolute_url())
 
         p = self.getProjection()[0]
         startpop=int(p['pop'].replace(',',''))
