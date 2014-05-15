@@ -1,4 +1,4 @@
-from xml.etree.ElementTree import Element, tostring
+import json
 
 from zope.interface import implements, Interface
 
@@ -41,33 +41,31 @@ class PopQueue(BrowserView):
         filter = { 'object_provides' : IModel.__identifier__,
                    'runstatus' : 'queued'
                  }
-
         results = self.portal_catalog(filter, sort_on='modified')
         if results:
+            obj = results[0].getObject()
+            url = obj.absolute_url()
+            rsp = dict(
+                status = 'OK',
+                id = obj.id,
+                title = obj.title,
+                config = url + '/getConfig',
+                repository = '',
+                )
+
             try:
-                config = self.context.restrictedTraverse(
-                    results[0].getPath() + '/getConfig')
-                ret = config()
+                rsp['cmdline'] = obj.getCmdline(obj)
+            except AttributeError:
+                rsp['cmdline'] = ''
 
-            except Exception:
-                results[0].getObject().setRunstatus('error')
-                results[0].getObject().reindexObject(['runstatus',])
+            # mark the object as running
+            obj.runstatus = 'running'
+            obj.reindexObject(['runstatus',])
 
-                ret = Element('queue')                
-                ret.text = "ERROR"
-                self.request.RESPONSE.setHeader('Content-Type', 
-                    'application/xml;;charset=UTF-8')
-                return tostring(ret, encoding='UTF-8')
-
-            # return configuration
-            results[0].getObject().setRunstatus('running')
-            results[0].getObject().reindexObject(['runstatus',])
-            return ret
-
+        # nothing to do
         else:
-            ret = Element('queue')
-            ret.text = "EMPTY"
-            self.request.RESPONSE.setHeader('Content-Type', 
-                'application/xml;;charset=UTF-8')
-            return tostring(ret, encoding='UTF-8')
+            rsp = dict( status = 'EMPTY' )
+
+        self.request.RESPONSE.setHeader('Content-Type', 'application/json')
+        return json.dumps(rsp)
 
