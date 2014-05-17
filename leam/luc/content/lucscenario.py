@@ -1,5 +1,7 @@
 """Definition of the LUC Scenario content type
 """
+import json
+
 from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 from Products.CMFCore.utils import getToolByName
 
@@ -13,6 +15,7 @@ from Products.Archetypes import atapi
 from Products.ATContentTypes.content import folder
 from Products.ATContentTypes.content import schemata
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
+from Acquisition import aq_inner
 
 # -*- Message Factory Imported Here -*-
 from leam.luc import lucMessageFactory as _
@@ -90,6 +93,17 @@ LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
         multiValued=True,
     ),
 
+    atapi.StringField(
+        'command',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.StringWidget(
+            label=_(u"Command String"),
+            description=_(u"Stores the startup command"),
+            visible={'view': 'hidden', 'edit': 'hidden'},
+        ),
+        required=True,
+        default="leam -l {login} -p {password} {config}",
+    ),
 
     atapi.StringField(
         'runstatus',
@@ -161,6 +175,8 @@ class LUCScenario(folder.ATFolder):
 
     runstatus = atapi.ATFieldProperty('runstatus')
 
+    command = atapi.ATFieldProperty('command')
+
     growth = atapi.ATReferenceFieldProperty('growth')
 
     growthmap = atapi.ATReferenceFieldProperty('growthmap')
@@ -195,7 +211,6 @@ class LUCScenario(folder.ATFolder):
         #self.setDefaultPage(obj)
         return
         
-
     security.declarePublic('getConfig')
     def getConfig(self):
         """Returns the cconfiguration necessary for running the model"""
@@ -241,6 +256,23 @@ class LUCScenario(folder.ATFolder):
         self.REQUEST.RESPONSE.setHeader('Content-Disposition',
             'attachment; filename="%s_scenario.xml"' % self.title)
         return tostring(model, encoding='UTF-8')
+
+    security.declarePublic('get_results')
+    def get_results(self):
+        """Returns the scenarios results to enable further processing"""
+        #import pdb; pdb.set_race()
+        context = aq_inner(self)
+        url = context.absolute_url()
+        d = dict(
+            short_name = context.id,
+            title = context.title,
+            context = url,
+            config = url + '/getConfig',
+            results = url + '/at_download/file',
+        )
+
+        self.REQUEST.RESPONSE.setHeader("Content-type","application/json")
+        return json.dumps(d)
 
 
 atapi.registerType(LUCScenario, PROJECTNAME)
