@@ -12,7 +12,7 @@ def read(*rnames):
 version = '1.0'
 
 long_description = (
-    read('README.txt')
+    read('README.md')
     + '\n' +
     'Change history\n'
     '**************\n'
@@ -46,8 +46,8 @@ setup(name='leam.luc',
         'License :: OSI Approved :: GNU General Public License (GPL)',
         ],
       keywords='',
-      author='',
-      author_email='',
+      author='Jeff Terstriep',
+      author_email='jefft@leamgroup.com',
       url='http://svn.plone.org/svn/collective/',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
