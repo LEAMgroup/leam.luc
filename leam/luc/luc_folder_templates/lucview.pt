@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="leam.luc">
+<body>
+
+<tal:comment tal:condition="nothing">
+    This is a sample view template. It will not be used for rendering the
+    content unless activated by creation of a view class with a matching name.
+</tal:comment>
+
+<metal:main fill-slot="content-core">
+  <metal:content-core define-macro="content-core">
+
+    <div tal:content="context/Title">Title inserted here</div>
+
+    <div tal:condition="view/runningModel">
+      <h2 class="section">Model Running</h2>
+      <p>details about running model</p>
+    </div>
+     
+    <h2 class="section">Most Recent Scenarios</h2>
+    <div>list the last few scenarios</div>
+    <a href="#">see more</a>
+
+    <h2 class="section">Most Recently Modified Projections</h2>
+    <div>list the last few projection</div>
+    <a href="#">see more</a>
+
+    <h2 class="section">Most Recently Modified Drivers</h2>
+    <div>list the last few drivers</div>
+    <a href="#">see more</a>
+
+  </metal:content-core>
+</metal:main>
+
+</body>
+</html>
+
