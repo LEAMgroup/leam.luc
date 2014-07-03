@@ -19,8 +19,8 @@ from plone.formwidget.contenttree import ObjPathSourceBinder
 
 from collective.z3cform.datagridfield import DataGridFieldFactory, DictRow
 
-
 from leam.luc import MessageFactory as _
+from luc_driver import ILUCDriver
 
 devtypes = SimpleVocabulary([
     SimpleTerm(value='growth', title=_(u"New Growth")),
@@ -30,9 +30,9 @@ devtypes = SimpleVocabulary([
 
 class IProjectionRow(Interface):
     """grid table for population and employment projections"""
-    year = scheme.TextLine(title=_(u"Year"))
-    pop = scheme.TextLine(title=_(u"Population"))
-    emp = scheme.TextLine(title=_(u"Employment"))
+    year = schema.TextLine(title=_(u"Year"))
+    pop = schema.TextLine(title=_(u"Population"))
+    emp = schema.TextLine(title=_(u"Employment"))
 
 # Interface class; used to define content-type schema.
 
@@ -62,12 +62,16 @@ class ILUCProjection(model.Schema):
 
     area = RelationChoice(
             title=_(u"Effective Area"),
+            source=ObjPathSourceBinder(
+                object_provides=ILUCDriver.__identifier__)
         )
 
     popdens = RelationChoice(
             title=_(u"Population Density"),
             description=_(u"Future population density driver (required for "
                           u"regional projections)"),
+            source=ObjPathSourceBinder(
+                object_provides=ILUCDriver.__identifier__),
             required = False,
         )
 
@@ -75,6 +79,8 @@ class ILUCProjection(model.Schema):
             title=_(u"Employment Density"),
             description=_(u"Future employment density driver (required for "
                           u"regional projections)"),
+            source=ObjPathSourceBinder(
+                object_provides=ILUCDriver.__identifier__),
             required = False,
         )
                  
@@ -82,6 +88,12 @@ class ILUCProjection(model.Schema):
             title=_(u"Driver Sets"),
             description=_(u"Driver Sets used during model (required for "
                           u"regional projections)"),
+            default = [],
+            value_type=RelationChoice(
+                    title=_(u"Drivers"),
+                    source=ObjPathSourceBinder(
+                            object_provides=ILUCDriver.__identifier__),
+            ),
             required=False,
         )
 

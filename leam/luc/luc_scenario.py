@@ -18,6 +18,7 @@ from z3c.relationfield.schema import RelationList, RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
 
 
+from leam.luc.luc_projection import ILUCProjection
 from leam.luc import MessageFactory as _
 
 
@@ -46,7 +47,8 @@ class ILUCScenario(model.Schema):
             title = _(u"Regional Projection"),
             description = _(u"Study area, pop/emp projections, "
                             u"and default densities"),
-            required = True,
+            source = ObjPathSourceBinder(
+                    object_provides=ILUCProjection.__identifier__),
         )
 
     subareas = RelationList(

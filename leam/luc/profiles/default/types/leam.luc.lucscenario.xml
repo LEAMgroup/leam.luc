@@ -9,7 +9,7 @@
     i18n:translate="">A complete Land Use Change (LUC) scenario definition.</property>
   <property name="icon_expr">string:${portal_url}/folder_icon.png</property>
   <property name="factory">leam.luc.lucscenario</property>
-  <property name="global_allow">True</property>
+  <property name="global_allow">False</property>
   <property name="filter_content_types">False</property>
   <property name="allowed_content_types" />
   <property name="allow_discussion">False</property>

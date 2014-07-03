@@ -21,7 +21,7 @@ from plone.formwidget.contenttree import ObjPathSourceBinder
 from leam.luc import MessageFactory as _
 
 
-drivers = SimpleVoculary([
+drivers = SimpleVocabulary([
     SimpleTerm(value="area", title=_(u"area")),
     SimpleTerm(value="popdens", title=_(u"Population Density")),
     SimpleTerm(value="empdens", title=_(u"Employment Density")),
@@ -34,6 +34,7 @@ drivers = SimpleVoculary([
     SimpleTerm(value="nogrowth", title=_(u"No Growth Zones")),
     SimpleTerm(value="landuse", title=_(u"Land Use and Land Cover")),
     SimpleTerm(value="dem", title=_(u"Elevation")),
+    ])
 
 # Interface class; used to define content-type schema.
 
@@ -54,11 +55,11 @@ class ILUCDriver(model.Schema):
             title = _(u"Effective Year"),
         )
 
-    layer = schema.NamedBlobFile(
+    layer = NamedBlobFile(
             title = _(u"GIS Layer"),
         )
 
-    mapfile = schema.NamedBlobFile(
+    mapfile = NamedBlobFile(
             title = _(u"MapFile"),
             required = False,
         )

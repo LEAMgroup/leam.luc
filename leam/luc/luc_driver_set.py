@@ -1,9 +1,10 @@
 from five import grok
 
 from zope import schema
+from plone.supermodel import model
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
-from plone.dexterity.content import Item
+from plone.dexterity.content import Container
 from plone.directives import dexterity, form
 from plone.app.textfield import RichText
 from plone.namedfile.field import NamedImage, NamedFile
@@ -13,41 +14,32 @@ from plone.namedfile.interfaces import IImageScaleTraversable
 from z3c.relationfield.schema import RelationList, RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
 
-from leam.simmap import ISimmap
-from leam.luc import ILUCScenario
+from leam.luc.luc_scenario import ILUCScenario
+from luc_driver import ILUCDriver
 
-from leam.ewg_taz import MessageFactory as _
+
+from leam.luc import MessageFactory as _
 
 
 # Interface class; used to define content-type schema.
 
-class ITAZAnalysis(form.Schema, IImageScaleTraversable):
+class ILUCDriverSet(model.Schema):
     """
     Computes population and employment changes per TAZ based on LEAM input.
     """
-    basemap = RelationChoice(
-        title=_(u"TAZ Base Map"),
-        source = ObjPathSourceBinder(object_provides=ISimmap.__identifier__),
-        required = True,
-    )
-
     year = schema.Int(
-        title = _(u"TAZ Base Year"),
+        title = _(u"Effective Year"),
         required = True,
         default = 2010,
     )
 
-    scenario = RelationChoice(
-        title = _(u"LEAM Scenario"),
+    trans = RelationChoice(
+        title=_(u"trans"),
         source = ObjPathSourceBinder(
-            object_provides=ILUCScenario.__identifier__),
+                object_provides=ILUCDriver.__identifier__),
         required = True,
     )
 
-    results = schema.Boolean(
-        title = _(u"Keep results with scenario"),
-        default = True,
-    )
 
 
 # Custom content-type class; objects created for this content type will
@@ -55,8 +47,8 @@ class ITAZAnalysis(form.Schema, IImageScaleTraversable):
 # methods and properties. Put methods that are mainly useful for rendering
 # in separate view classes.
 
-class TAZAnalysis(Item):
-    grok.implements(ITAZAnalysis)
+class LUCDriverSet(Container):
+    grok.implements(ILUCDriverSet)
 
     # Add your class methods and properties here
 
@@ -74,7 +66,7 @@ class TAZAnalysis(Item):
 class SampleView(grok.View):
     """ sample view class """
 
-    grok.context(ITAZAnalysis)
+    grok.context(ILUCDriverSet)
     grok.require('zope2.View')
 
     # grok.name('view')
