@@ -57,6 +57,7 @@ setup(name='leam.luc',
       install_requires=['setuptools',
                         # -*- Extra requirements: -*-
                         'plone.app.registry',
+                        'plone.api',
                         ],
       tests_require=tests_require,
       extras_require=dict(tests=tests_require),
