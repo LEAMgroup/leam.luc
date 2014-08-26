@@ -49,9 +49,15 @@ class PopQueue(BrowserView):
                 status = 'OK',
                 id = obj.id,
                 title = obj.title,
+                url = url,
                 config = url + '/getConfig',
-                repository = '',
+                on_done = url + '/run_complete',
                 )
+
+            try:
+                rsp['repository'] = obj.getRepository(obj)
+            except AttributeError:
+                rsp['repository'] = ''
 
             try:
                 rsp['cmdline'] = obj.getCmdline(obj)
