@@ -3,25 +3,21 @@ Name: leam.luc
 Version: 1.0
 Summary: Frontend to the LEAM LUC model
 Home-page: http://svn.plone.org/svn/collective/
-Author: UNKNOWN
-Author-email: UNKNOWN
+Author: Jeff Terstriep
+Author-email: jefft@leamgroup.com
 License: GPL
-Description: .. contents::
+Description: leam.luc
+        ========
         
-        .. Note!
-           -----
-           Update the following URLs to point to your:
+        Plone plugin to provide portal interface to LEAM model.
         
-           - code repository
-           - bug tracker
-           - questions/comments feedback mail
-           (do not set a real mail, to avoid spams)
+        This reposity  provides the web interface for LEAM model.  The plugin
+        provides 3 content types; LUCScenario, Projection, and Driver Sets. 
+        LUCScenario represents the complete schenario configuration.  Projections
+        provide population and employment change for a specific region or zone. 
+        Driver Sets consist of a set of drivers each representing a specific
+        point in time.  The drivers themselves are represented by SimMaps.
         
-           Or remove it if not used.
-        
-        - Code repository: http://svn.somewhere.com/...
-        - Questions and comments to somemailing_list
-        - Report bugs at http://bug.somewhere.com/..
         
         
         Change history
