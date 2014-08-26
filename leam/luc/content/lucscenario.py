@@ -1,13 +1,13 @@
 """Definition of the LUC Scenario content type
 """
-import json
 
-from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 from Products.CMFCore.utils import getToolByName
 
 from zope.interface import implements
 from zope.component import getUtility
+from zope.app.intid.interfaces import IIntIds
 from plone.registry.interfaces import IRegistry
+from plone import api
 
 from AccessControl import ClassSecurityInfo
 
@@ -16,12 +16,16 @@ from Products.ATContentTypes.content import folder
 from Products.ATContentTypes.content import schemata
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from Acquisition import aq_inner
+from z3c.relationfield import RelationValue
 
 # -*- Message Factory Imported Here -*-
 from leam.luc import lucMessageFactory as _
 
 from leam.luc.interfaces import ILUCScenario,ILUCSettings,IModel
 from leam.luc.config import PROJECTNAME
+
+from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
+import json
 
 LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
 
@@ -210,10 +214,58 @@ class LUCScenario(folder.ATFolder):
         
         #self.setDefaultPage(obj)
         return
+
+    security.declarePublic('queue_post')
+    def queue_post(self):
+        """Create queued versions of any post-processing jobs found
+        in the post-processing folder.
+
+        Note: Is this the appropriate place for this funcntionality?
+        How much model support logic should be in the interface code and 
+        should this call be part of the API or triggered by a call
+        to the model success API call and should it be called by the model
+        directly, the jobserver, be Plone interface code?
+        """
+        #import pdb; pdb.set_trace()
+
+        context = aq_inner(self)
+        portal = api.portal.get()
+        portal_path = '/'.join(portal.getPhysicalPath())
+
+        # if a post-processing folder exists then delete contents
+        if 'post-processing' in context:
+            localpp = context.get('post-processing')
+            for ids in localpp.keys():
+                api.content.delete(obj=localpp[ids])
+
+        # otherwise create post-processing folder
+        else:
+            localpp = api.content.create(
+                    type='Folder', 
+                    title='Post Processing',
+                    container=context)
+
+        # get the LUC post-processing folder
+        # TODO: this path shouldn't be hard-coded
+        pp_path = portal_path + '/luc/post-processing'
+        pp = api.content.get(path=pp_path)
+        for ids in pp.keys():
+            api.content.copy(source=pp[ids], target=localpp)
+
+        # update the variable in the newly created post-processing jobs
+        intids = getUtility(IIntIds)
+        scenario_id = intids.getId(context)
+        for ids in localpp.keys():
+            localpp[ids].scenario = RelationValue(scenario_id)
+            localpp[ids].runstatus = 'queued'
+            localpp[ids].reindexObject(['runstatus',])
+
+        return '%d jobs queued' % len(localpp.keys())
+
         
     security.declarePublic('getConfig')
     def getConfig(self):
-        """Returns the cconfiguration necessary for running the model"""
+        """Returns the configuration necessary for running the model"""
         #import pdb; pdb.set_trace()
 
         model = Element('model')
@@ -243,7 +295,8 @@ class LUCScenario(folder.ATFolder):
         for p in self.getDeclinemap():
             reg.append(fromstring(p.getConfig()))
 
-        reg = SubElement(tree, 'postprocess')
+        SubElement(tree, 'post-processing').text = self.absolute_url() + \
+                '/queue_post'
         #urltool = getToolByName(self.context, 'portal_url')
         #portal = urltool.getPortalObject()
         #zones = portal.luc.scenarios.subarearesults
