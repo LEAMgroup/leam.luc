@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 *~
-=======
->>>>>>> origin/master
 *.pyc
 *.pyo
 *.tmp*
@@ -10,21 +7,10 @@
 *.EGG
 *.egg-info
 *.EGG-INFO
-<<<<<<< HEAD
 *.kpf
 *.swp
 *.wpr
 .*.cfg
-.installed.cfg
-.mr.developer.cfg
-.hg/
-.bzr/
-.svn/
-.project
-.pydevproject
-=======
-.*.cfg
->>>>>>> origin/master
 bin/
 build/
 develop-eggs/
@@ -34,11 +20,11 @@ fake-eggs/
 parts/
 dist/
 var/
-<<<<<<< HEAD
-
-
+.hg/
+.bzr/
+.svn/
+.project
+.pydevproject
 
 # OSX
 .DS_Store
-=======
->>>>>>> origin/master
