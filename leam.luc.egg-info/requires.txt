@@ -1,6 +1,0 @@
-setuptools
-plone.app.registry
-plone.api
-
-[tests]
-zope.testing
