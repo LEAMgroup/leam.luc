@@ -1,22 +1,22 @@
 <?xml version="1.0"?>
-<object name="leam.luc.lucdriverset"
+<object name="leam.luc.driverset"
    meta_type="Dexterity FTI"
    i18n:domain="leam.luc" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
   <!-- Basic metadata -->
-  <property name="title" i18n:translate="">LUC Driver Set</property>
+  <property name="title" i18n:translate="">Driver Set</property>
   <property name="description"
     i18n:translate="">A collection of drivers for a specific point in time.</property>
   <property name="icon_expr">string:${portal_url}/folder_icon.png</property>
-  <property name="factory">leam.luc.lucdriverset</property>
+  <property name="factory">leam.luc.driverset</property>
   <property name="global_allow">False</property>
   <property name="filter_content_types">False</property>
   <property name="allowed_content_types" />
   <property name="allow_discussion">True</property>
 
   <!-- schema and class used for content items -->
-  <property name="schema">leam.luc.luc_driver_set.ILUCDriverSet</property>
-  <property name="klass">leam.luc.luc_driver_set.LUCDriverSet</property>
+  <property name="schema">leam.luc.driver_set.IDriverSet</property>
+  <property name="klass">leam.luc.driver_set.DriverSet</property>
 
   <property name="behaviors">
      <element value="plone.app.content.interfaces.INameFromTitle" />

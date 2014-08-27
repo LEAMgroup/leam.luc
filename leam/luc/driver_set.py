@@ -14,8 +14,8 @@ from plone.namedfile.interfaces import IImageScaleTraversable
 from z3c.relationfield.schema import RelationList, RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
 
-from leam.luc.luc_scenario import ILUCScenario
-from luc_driver import ILUCDriver
+from scenario import IScenario
+from driver import IDriver
 
 
 from leam.luc import MessageFactory as _
@@ -23,7 +23,7 @@ from leam.luc import MessageFactory as _
 
 # Interface class; used to define content-type schema.
 
-class ILUCDriverSet(model.Schema):
+class IDriverSet(model.Schema):
     """
     Computes population and employment changes per TAZ based on LEAM input.
     """
@@ -36,7 +36,7 @@ class ILUCDriverSet(model.Schema):
     trans = RelationChoice(
         title=_(u"trans"),
         source = ObjPathSourceBinder(
-                object_provides=ILUCDriver.__identifier__),
+                object_provides=IDriver.__identifier__),
         required = True,
     )
 
@@ -47,15 +47,15 @@ class ILUCDriverSet(model.Schema):
 # methods and properties. Put methods that are mainly useful for rendering
 # in separate view classes.
 
-class LUCDriverSet(Container):
-    grok.implements(ILUCDriverSet)
+class DriverSet(Container):
+    grok.implements(IDriverSet)
 
     # Add your class methods and properties here
 
 
 # View class
 # The view will automatically use a similarly named template in
-# taz_analysis_templates.
+# driver_set_templates
 # Template filenames should be all lower case.
 # The view will render when you request a content object with this
 # interface with "/@@sampleview" appended.
@@ -66,7 +66,7 @@ class LUCDriverSet(Container):
 class SampleView(grok.View):
     """ sample view class """
 
-    grok.context(ILUCDriverSet)
+    grok.context(IDriverSet)
     grok.require('zope2.View')
 
     # grok.name('view')

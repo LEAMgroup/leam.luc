@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<object name="leam.luc.driverfolder"
+<object name="leam.luc.drivers"
    meta_type="Dexterity FTI"
    i18n:domain="leam.luc" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
@@ -8,18 +8,18 @@
   <property name="description"
     i18n:translate="">A container for managing model drivers.</property>
   <property name="icon_expr">string:${portal_url}/folder_icon.png</property>
-  <property name="factory">leam.luc.driverfolder</property>
+  <property name="factory">leam.luc.drivers</property>
   <property name="global_allow">False</property>
   <property name="filter_content_types">True</property>
   <property name="allowed_content_types">
-    <element value="leam.luc.driverfolder"/>
-    <element value="leam.luc.lucdriver"/>
+    <element value="leam.luc.drivers"/>
+    <element value="leam.luc.driver"/>
   </property>
   <property name="allow_discussion">False</property>
 
   <!-- schema and class used for content items -->
-  <property name="schema">leam.luc.driver_folder.IDriverFolder</property>
-  <property name="klass">leam.luc.driver_folder.DriverFolder</property>
+  <property name="schema">leam.luc.drivers.IDrivers</property>
+  <property name="klass">leam.luc.drivers.Drivers</property>
 
   <property name="behaviors">
      <element value="plone.app.content.interfaces.INameFromTitle" />

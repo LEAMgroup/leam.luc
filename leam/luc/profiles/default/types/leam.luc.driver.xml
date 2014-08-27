@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<object name="leam.luc.lucdriver"
+<object name="leam.luc.driver"
    meta_type="Dexterity FTI"
    i18n:domain="leam.luc" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
@@ -8,15 +8,15 @@
   <property name="description"
     i18n:translate="">A development driver for the LUC model.</property>
   <property name="icon_expr">string:${portal_url}/folder_icon.png</property>
-  <property name="factory">leam.luc.lucdriver</property>
+  <property name="factory">leam.luc.driver</property>
   <property name="global_allow">False</property>
   <property name="filter_content_types">False</property>
   <property name="allowed_content_types" />
   <property name="allow_discussion">True</property>
 
   <!-- schema and class used for content items -->
-  <property name="schema">leam.luc.luc_driver.ILUCDriver</property>
-  <property name="klass">leam.luc.luc_driver.LUCDriver</property>
+  <property name="schema">leam.luc.driver.IDriver</property>
+  <property name="klass">leam.luc.driver.Driver</property>
 
   <property name="behaviors">
      <element value="plone.app.content.interfaces.INameFromTitle" />

@@ -22,17 +22,10 @@ from leam.luc import MessageFactory as _
 
 # Interface class; used to define content-type schema.
 
-class IScenarioFolder(form.Schema, IImageScaleTraversable):
+class IScenarios(form.Schema, IImageScaleTraversable):
     """
     A container for managing scenarios.
     """
-
-    # If you want a schema-defined interface, delete the model.load
-    # line below and delete the matching file in the models sub-directory.
-    # If you want a model-based interface, edit
-    # models/scenario_folder.xml to define the content type.
-
-    form.model("models/scenario_folder.xml")
 
 
 # Custom content-type class; objects created for this content type will
@@ -40,15 +33,15 @@ class IScenarioFolder(form.Schema, IImageScaleTraversable):
 # methods and properties. Put methods that are mainly useful for rendering
 # in separate view classes.
 
-class ScenarioFolder(Container):
-    grok.implements(IScenarioFolder)
+class Scenarios(Container):
+    grok.implements(IScenarios)
 
     # Add your class methods and properties here
 
 
 # View class
 # The view will automatically use a similarly named template in
-# scenario_folder_templates.
+# scenario_templates.
 # Template filenames should be all lower case.
 # The view will render when you request a content object with this
 # interface with "/@@sampleview" appended.
@@ -59,7 +52,7 @@ class ScenarioFolder(Container):
 class SampleView(grok.View):
     """ sample view class """
 
-    grok.context(IScenarioFolder)
+    grok.context(IScenarios)
     grok.require('zope2.View')
 
     # grok.name('view')

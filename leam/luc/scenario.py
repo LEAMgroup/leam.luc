@@ -18,13 +18,13 @@ from z3c.relationfield.schema import RelationList, RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
 
 
-from leam.luc.luc_projection import ILUCProjection
+from leam.luc.projection import IProjection
 from leam.luc import MessageFactory as _
 
 
 # Interface class; used to define content-type schema.
 
-class ILUCScenario(model.Schema):
+class IScenario(model.Schema):
     """
     A complete Land Use Change (LUC) scenario definition.
     """
@@ -48,7 +48,7 @@ class ILUCScenario(model.Schema):
             description = _(u"Study area, pop/emp projections, "
                             u"and default densities"),
             source = ObjPathSourceBinder(
-                    object_provides=ILUCProjection.__identifier__),
+                    object_provides=IProjection.__identifier__),
         )
 
     subareas = RelationList(
@@ -63,15 +63,15 @@ class ILUCScenario(model.Schema):
 # methods and properties. Put methods that are mainly useful for rendering
 # in separate view classes.
 
-class LUCScenario(Container):
-    grok.implements(ILUCScenario)
+class Scenario(Container):
+    grok.implements(IScenario)
 
     # Add your class methods and properties here
 
 
 # View class
 # The view will automatically use a similarly named template in
-# luc_scenario_templates.
+# scenario_templates.
 # Template filenames should be all lower case.
 # The view will render when you request a content object with this
 # interface with "/@@sampleview" appended.
@@ -82,7 +82,7 @@ class LUCScenario(Container):
 class SampleView(grok.View):
     """ sample view class """
 
-    grok.context(ILUCScenario)
+    grok.context(IScenario)
     grok.require('zope2.View')
 
     # grok.name('view')

@@ -8,12 +8,12 @@
   -->
 <object name="portal_types" meta_type="Plone Types Tool">
   <!-- -*- extra stuff goes here -*- -->
-  <object name="leam.luc.lucdriverset" meta_type="Dexterity FTI" />
-  <object name="leam.luc.lucfolder" meta_type="Dexterity FTI" />
-  <object name="leam.luc.lucdriver" meta_type="Dexterity FTI" />
-  <object name="leam.luc.lucprojection" meta_type="Dexterity FTI" />
-  <object name="leam.luc.lucscenario" meta_type="Dexterity FTI" />
-  <object name="leam.luc.driverfolder" meta_type="Dexterity FTI" />
-  <object name="leam.luc.projectionfolder" meta_type="Dexterity FTI" />
-  <object name="leam.luc.scenariofolder" meta_type="Dexterity FTI" />
+  <object name="leam.luc.luc" meta_type="Dexterity FTI" />
+  <object name="leam.luc.scenarios" meta_type="Dexterity FTI" />
+  <object name="leam.luc.scenario" meta_type="Dexterity FTI" />
+  <object name="leam.luc.projections" meta_type="Dexterity FTI" />
+  <object name="leam.luc.projection" meta_type="Dexterity FTI" />
+  <object name="leam.luc.drivers" meta_type="Dexterity FTI" />
+  <object name="leam.luc.driver" meta_type="Dexterity FTI" />
+  <object name="leam.luc.driverset" meta_type="Dexterity FTI" />
 </object>

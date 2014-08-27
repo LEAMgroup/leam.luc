@@ -38,7 +38,7 @@ drivers = SimpleVocabulary([
 
 # Interface class; used to define content-type schema.
 
-class ILUCDriver(model.Schema):
+class IDriver(model.Schema):
     """
     A development driver for the LUC model.
     """
@@ -69,15 +69,15 @@ class ILUCDriver(model.Schema):
 # methods and properties. Put methods that are mainly useful for rendering
 # in separate view classes.
 
-class LUCDriver(Container):
-    grok.implements(ILUCDriver)
+class Driver(Container):
+    grok.implements(IDriver)
 
     # Add your class methods and properties here
 
 
 # View class
 # The view will automatically use a similarly named template in
-# luc_driver_templates.
+# driver_templates.
 # Template filenames should be all lower case.
 # The view will render when you request a content object with this
 # interface with "/@@sampleview" appended.
@@ -88,7 +88,7 @@ class LUCDriver(Container):
 class SampleView(grok.View):
     """ sample view class """
 
-    grok.context(ILUCDriver)
+    grok.context(IDriver)
     grok.require('zope2.View')
 
     # grok.name('view')

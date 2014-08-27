@@ -20,7 +20,7 @@ from plone.formwidget.contenttree import ObjPathSourceBinder
 from collective.z3cform.datagridfield import DataGridFieldFactory, DictRow
 
 from leam.luc import MessageFactory as _
-from luc_driver import ILUCDriver
+from driver import IDriver
 
 devtypes = SimpleVocabulary([
     SimpleTerm(value='growth', title=_(u"New Growth")),
@@ -36,7 +36,7 @@ class IProjectionRow(Interface):
 
 # Interface class; used to define content-type schema.
 
-class ILUCProjection(model.Schema):
+class IProjection(model.Schema):
     """
     A region and population/employment projection for the LUC model.
     """
@@ -63,7 +63,7 @@ class ILUCProjection(model.Schema):
     area = RelationChoice(
             title=_(u"Effective Area"),
             source=ObjPathSourceBinder(
-                object_provides=ILUCDriver.__identifier__)
+                object_provides=IDriver.__identifier__)
         )
 
     popdens = RelationChoice(
@@ -71,7 +71,7 @@ class ILUCProjection(model.Schema):
             description=_(u"Future population density driver (required for "
                           u"regional projections)"),
             source=ObjPathSourceBinder(
-                object_provides=ILUCDriver.__identifier__),
+                object_provides=IDriver.__identifier__),
             required = False,
         )
 
@@ -80,7 +80,7 @@ class ILUCProjection(model.Schema):
             description=_(u"Future employment density driver (required for "
                           u"regional projections)"),
             source=ObjPathSourceBinder(
-                object_provides=ILUCDriver.__identifier__),
+                object_provides=IDriver.__identifier__),
             required = False,
         )
                  
@@ -92,7 +92,7 @@ class ILUCProjection(model.Schema):
             value_type=RelationChoice(
                     title=_(u"Drivers"),
                     source=ObjPathSourceBinder(
-                            object_provides=ILUCDriver.__identifier__),
+                            object_provides=IDriver.__identifier__),
             ),
             required=False,
         )
@@ -102,15 +102,15 @@ class ILUCProjection(model.Schema):
 # methods and properties. Put methods that are mainly useful for rendering
 # in separate view classes.
 
-class LUCProjection(Container):
-    grok.implements(ILUCProjection)
+class Projection(Container):
+    grok.implements(IProjection)
 
     # Add your class methods and properties here
 
 
 # View class
 # The view will automatically use a similarly named template in
-# luc_projection_templates.
+# projection_templates.
 # Template filenames should be all lower case.
 # The view will render when you request a content object with this
 # interface with "/@@sampleview" appended.
@@ -121,7 +121,7 @@ class LUCProjection(Container):
 class SampleView(grok.View):
     """ sample view class """
 
-    grok.context(ILUCProjection)
+    grok.context(IProjection)
     grok.require('zope2.View')
 
     # grok.name('view')

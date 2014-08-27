@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<object name="leam.luc.projectionfolder"
+<object name="leam.luc.projections"
    meta_type="Dexterity FTI"
    i18n:domain="leam.luc" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
@@ -8,18 +8,18 @@
   <property name="description"
     i18n:translate="">A container for managing projections.</property>
   <property name="icon_expr">string:${portal_url}/folder_icon.png</property>
-  <property name="factory">leam.luc.projectionfolder</property>
+  <property name="factory">leam.luc.projections</property>
   <property name="global_allow">False</property>
   <property name="filter_content_types">True</property>
   <property name="allowed_content_types">
-    <element value="leam.luc.projectionfolder"/>
-    <element vlaue="leam.luc.lucprojection"/>
+    <element value="leam.luc.projections"/>
+    <element vlaue="leam.luc.projection"/>
   </property>
   <property name="allow_discussion">False</property>
 
   <!-- schema and class used for content items -->
-  <property name="schema">leam.luc.projection_folder.IProjectionFolder</property>
-  <property name="klass">leam.luc.projection_folder.ProjectionFolder</property>
+  <property name="schema">leam.luc.projections.IProjections</property>
+  <property name="klass">leam.luc.projections.Projections</property>
 
   <property name="behaviors">
      <element value="plone.app.content.interfaces.INameFromTitle" />

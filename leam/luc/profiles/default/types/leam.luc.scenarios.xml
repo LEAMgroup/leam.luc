@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<object name="leam.luc.scenariofolder"
+<object name="leam.luc.scenarios"
    meta_type="Dexterity FTI"
    i18n:domain="leam.luc" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
@@ -8,18 +8,18 @@
   <property name="description"
     i18n:translate="">A container for managing scenarios.</property>
   <property name="icon_expr">string:${portal_url}/folder_icon.png</property>
-  <property name="factory">leam.luc.scenariofolder</property>
+  <property name="factory">leam.luc.scenarios</property>
   <property name="global_allow">False</property>
   <property name="filter_content_types">True</property>
   <property name="allowed_content_types">
-    <element value="leam.luc.scenariofolder"/>
-    <element value="leam.luc.lucscenario"/>
+    <element value="leam.luc.scenarios"/>
+    <element value="leam.luc.scenario"/>
   </property>
   <property name="allow_discussion">False</property>
 
   <!-- schema and class used for content items -->
-  <property name="schema">leam.luc.scenario_folder.IScenarioFolder</property>
-  <property name="klass">leam.luc.scenario_folder.ScenarioFolder</property>
+  <property name="schema">leam.luc.scenarios.IScenarios</property>
+  <property name="klass">leam.luc.scenarios.Scenarios</property>
 
   <property name="behaviors">
      <element value="plone.app.content.interfaces.INameFromTitle" />

@@ -52,65 +52,65 @@ def test_suite():
 
         # -*- extra stuff goes here -*-
 
-        # Integration tests for LUCDriverSet
+        # Integration tests for DriverSet
         ztc.ZopeDocFileSuite(
-            'LUCDriverSet.txt',
+            'DriverSet.txt',
             package='leam.luc',
             optionflags = OPTION_FLAGS,
             test_class=TestCase),
 
 
-        # Integration tests for LUCFolder
+        # Integration tests for LUC
         ztc.ZopeDocFileSuite(
-            'LUCFolder.txt',
+            'LUC.txt',
             package='leam.luc',
             optionflags = OPTION_FLAGS,
             test_class=TestCase),
 
 
-        # Integration tests for LUCDriver
+        # Integration tests for Driver
         ztc.ZopeDocFileSuite(
-            'LUCDriver.txt',
+            'Driver.txt',
             package='leam.luc',
             optionflags = OPTION_FLAGS,
             test_class=TestCase),
 
 
-        # Integration tests for LUCProjection
+        # Integration tests for Projection
         ztc.ZopeDocFileSuite(
-            'LUCProjection.txt',
+            'Projection.txt',
             package='leam.luc',
             optionflags = OPTION_FLAGS,
             test_class=TestCase),
 
 
-        # Integration tests for LUCScenario
+        # Integration tests for Scenario
         ztc.ZopeDocFileSuite(
-            'LUCScenario.txt',
+            'Scenario.txt',
             package='leam.luc',
             optionflags = OPTION_FLAGS,
             test_class=TestCase),
 
 
-        # Integration tests for DriverFolder
+        # Integration tests for Drivers
         ztc.ZopeDocFileSuite(
-            'DriverFolder.txt',
+            'Drivers.txt',
             package='leam.luc',
             optionflags = OPTION_FLAGS,
             test_class=TestCase),
 
 
-        # Integration tests for ProjectionFolder
+        # Integration tests for Projections
         ztc.ZopeDocFileSuite(
-            'ProjectionFolder.txt',
+            'Projections.txt',
             package='leam.luc',
             optionflags = OPTION_FLAGS,
             test_class=TestCase),
 
 
-        # Integration tests for ScenarioFolder
+        # Integration tests for Scenarios
         ztc.ZopeDocFileSuite(
-            'ScenarioFolder.txt',
+            'Scenarios.txt',
             package='leam.luc',
             optionflags = OPTION_FLAGS,
             test_class=TestCase),

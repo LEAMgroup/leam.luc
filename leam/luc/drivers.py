@@ -22,17 +22,10 @@ from leam.luc import MessageFactory as _
 
 # Interface class; used to define content-type schema.
 
-class IDriverFolder(form.Schema, IImageScaleTraversable):
+class IDrivers(form.Schema, IImageScaleTraversable):
     """
     A container for managing model drivers.
     """
-
-    # If you want a schema-defined interface, delete the model.load
-    # line below and delete the matching file in the models sub-directory.
-    # If you want a model-based interface, edit
-    # models/driver_folder.xml to define the content type.
-
-    form.model("models/driver_folder.xml")
 
 
 # Custom content-type class; objects created for this content type will
@@ -40,15 +33,15 @@ class IDriverFolder(form.Schema, IImageScaleTraversable):
 # methods and properties. Put methods that are mainly useful for rendering
 # in separate view classes.
 
-class DriverFolder(Container):
-    grok.implements(IDriverFolder)
+class Drivers(Container):
+    grok.implements(IDrivers)
 
     # Add your class methods and properties here
 
 
 # View class
 # The view will automatically use a similarly named template in
-# driver_folder_templates.
+# drivers_templates.
 # Template filenames should be all lower case.
 # The view will render when you request a content object with this
 # interface with "/@@sampleview" appended.
@@ -59,7 +52,7 @@ class DriverFolder(Container):
 class SampleView(grok.View):
     """ sample view class """
 
-    grok.context(IDriverFolder)
+    grok.context(IDrivers)
     grok.require('zope2.View')
 
     # grok.name('view')
