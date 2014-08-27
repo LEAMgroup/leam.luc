@@ -138,6 +138,8 @@ class Projection(base.ATCTContent):
 
         SubElement(tree, 'id').text = self.id
         SubElement(tree, 'title').text = self.title
+        SubElement(tree, 'startyear').text = self.getProjection()[0]['year']
+        SubElement(tree, 'endyear').text = self.getProjection()[-1]['year']
         SubElement(tree, 'graph').text = self.absolute_url() + '/getGraph'
         SubElement(tree, 'layer').text = self.zone.absolute_url() + \
             '/at_download/simImage'
