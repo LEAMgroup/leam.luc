@@ -268,11 +268,17 @@ class LUCScenario(folder.ATFolder):
         """Returns the configuration necessary for running the model"""
         #import pdb; pdb.set_trace()
 
+        context = aq_inner(self)
+        portal = api.portal.get()
+        portal_path = '/'.join(portal.getPhysicalPath())
+
         model = Element('model')
         tree = SubElement(model, 'scenario')
         SubElement(tree, 'id').text = self.id
         SubElement(tree, 'title').text = self.title
         SubElement(tree, 'results').text = self.absolute_url()
+        SubElement(tree, 'grass_loc').text = \
+            context.luc.resources.grass.absolute_url() + '/at_download/file'
 
         # get the repository from registry 
         registry = getUtility(IRegistry)
