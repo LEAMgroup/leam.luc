@@ -190,14 +190,6 @@ class LUCScenario(folder.ATFolder):
     declinemap = atapi.ATReferenceFieldProperty('declinemap')
 
 
-    security.declarePublic('requeue')
-    def requeue(self):
-        """simple method to requeue the scenario"""
-        self.runstatus = 'queued'
-        self.reindexObject(['runstatus',])
-        return "requeue"
-
-
     security.declarePublic('end_run')
     def end_run(self):
         """Mark the run as complete, set the end time, and set
@@ -214,6 +206,15 @@ class LUCScenario(folder.ATFolder):
         
         #self.setDefaultPage(obj)
         return
+
+
+    security.declarePublic('requeue')
+    def requeue(self):
+        """simple method to requeue the current scenario"""
+        self.runstatus = 'queued'
+        self.reindexObject(['runstatus',])
+        return "requeue"
+
 
     security.declarePublic('queue_post')
     def queue_post(self):
@@ -262,7 +263,74 @@ class LUCScenario(folder.ATFolder):
 
         return '%d jobs queued' % len(localpp.keys())
 
+    security.declarePublic('config')
+    def config(self):
+        """return the scenario configuration"""
+        #import pdb; pdb.set_trace()
+
+        context = aq_inner(self)
+        portal = api.portal.get()
+        portal_path = '/'.join(portal.getPhysicalPath())
+
+        r = {
+            '@context': 'http://leamgroup.com/contexts/scenario.jsonld',
+            '@id': self.absolute_url(),
+            'shortname': self.id,
+            'title': self.title,
+            'results': self.absolute_url(),
+            'config': self.absolute_url()+'/config',
+
+            'resources': {
+                'grass': context.luc.resources.grass.absolute_url() \
+                        + '/at_download/file',
+                },
+
+            'projections': [],
+            'drivers': [],
+
+            #deprecated
+            'grass_loc': context.luc.resources.grass.absolute_url() \
+                        + '/at_download/file',
+
+            }
+
+        for p in self.getGrowth():
+            d = {
+                '@id': p.absolute_url(),
+                'config': p.absolute_url()+'/config',
+                'mode': 'growth',
+                }
+            r['projections'].append(d)
+
+        for p in self.getDecline():
+            d = {
+                '@id': p.absolute_url(),
+                'config': p.absolute_url()+'/config',
+                'mode': 'decline',
+                }
+            r['projections'].append(d)
         
+        for p in self.getGrowthmap():
+            d = {
+                '@id': p.absolute_url(),
+                'config': p.absolute_url()+'/getConfig',
+                'cache': p.absolute_url()+'/at_download/probfile',
+                'mode': 'growth',
+                }
+            r['drivers'].append(d)
+
+        for p in self.getDeclinemap():
+            d = {
+                '@id': p.absolute_url(),
+                'config': p.absolute_url()+'/getConfig',
+                'cache': p.absolute_url()+'/at_download/probfile',
+                'mode': 'decline',
+                }
+            r['drivers'].append(d)
+
+        self.REQUEST.RESPONSE.setHeader("Content-type","application/json")
+        return json.dumps(r)
+
     security.declarePublic('getConfig')
     def getConfig(self):
         """Returns the configuration necessary for running the model"""
@@ -316,22 +384,58 @@ class LUCScenario(folder.ATFolder):
             'attachment; filename="%s_scenario.xml"' % self.title)
         return tostring(model, encoding='UTF-8')
 
+
     security.declarePublic('get_results')
     def get_results(self):
         """Returns the scenarios results to enable further processing"""
-        #import pdb; pdb.set_race()
+
+        #import pdb; pdb.set_trace()
+
+        # context is the scenario object
         context = aq_inner(self)
-        url = context.absolute_url()
-        d = dict(
-            short_name = context.id,
-            title = context.title,
-            context = url,
-            config = url + '/getConfig',
-            results = url + '/at_download/file',
-        )
+        results = getattr(context, 'model-results', None)
+        if results:
+            url = context.absolute_url()
+            d = dict(
+                status = 0,
+                errmsg = '',
+                short_name = context.id,
+                title = context.title,
+                context = url,
+                config = url + '/getConfig',
+                results = url + '/at_download/file',
+                )
+
+        else:
+            d = dict(
+                status = 1,
+                errmsg =  'results not available',
+                short_name = context.id,
+                title = context.title,
+                context = url,
+                )
 
         self.REQUEST.RESPONSE.setHeader("Content-type","application/json")
         return json.dumps(d)
+
+
+    security.declarePublic('set_view')
+    def set_view(self):
+        """set the default content on scenario folder view"""
+
+        import pdb; pdb.set_trace()
+        context = aq_inner(self)
+
+        view_id = self.REQUEST.get('view_id', None)
+        if not view_id:
+            return "FAIL: view_id parameter required"
+
+        view_obj = getattr(context, view_id, None)
+        if not view_obj:
+            return "FAIL: id %s not found in folder" % self
+
+        context.default_page = view_id
+        return "SUCCESS: default page = " + view_id
 
 
 atapi.registerType(LUCScenario, PROJECTNAME)

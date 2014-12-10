@@ -273,6 +273,7 @@ class Probmap(base.ATCTContent):
         SubElement(tree, 'id').text = self.id
         SubElement(tree, 'title').text = self.title
         SubElement(tree, 'year').text = str(self.year)
+        SubElement(tree, 'url').text = self.absolute_url()
         SubElement(tree, 'download').text = self.absolute_url() + \
             '/at_download/probfile'
 

@@ -1,5 +1,6 @@
 """Definition of the Projection content type
 """
+import json
 from StringIO import StringIO
 
 from xml.etree.ElementTree import Element, SubElement
@@ -129,7 +130,63 @@ class Projection(base.ATCTContent):
 
     redevelopment = atapi.ATFieldProperty('redevelopment')
 
+
+    security.declarePublic('config')
+    def config(self):
+        """return projection configuration"""
+
+        url = self.absolute_url()
+        p = self.getProjection()
+
+        year = [rec['year'] for rec in p]
+        pop = [rec['pop'] for rec in p]
+        emp = [rec['emp'] for rec in p]
+
+        r = {
+            '@context': 'http://leamgroup.com/contexts/projections.jsonld',
+            '@id': url,
+            'title': self.title,
+            'shortname': self.id,
+            'startyear': p[0]['year'],
+            'endyear': p[-1]['year'],
+            'value': {
+                'years': year,
+                'population': pop,
+                'employment': emp,
+                },
+            'zone': {
+                '@id': self.zone.absolute_url(),
+                '@type': 'simmap',
+                'layer': self.zone.absolute_url() + '/at_download/simImage',
+                'mapfile': self.zone.absolute_url() + '/at_download/mapFile',
+                },
+
+            # deprecated
+            'graph': url + '/getGraph',
+            }
+
+        if self.pop_density:
+            url = self.pop_density.absolute_url()
+            r['pop_density'] = {
+                '@id': url,
+                '@type': 'simmap',
+                'layer': url + '/at_download/simImage',
+                'mapfile': url + '/at_download/mapFile',
+                }
     
+        if self.emp_density:
+            url = self.emp_density.absolute_url()
+            r['pop_density'] = {
+                '@id': url,
+                '@type': 'simmap',
+                'layer': url + '/at_download/simImage',
+                'mapfile': url + '/at_download/mapFile',
+                }
+
+        self.REQUEST.RESPONSE.setHeader('Content-type','application/json')
+        return json.dumps(r)
+
+
     security.declarePublic('getConfig')
     def getConfig(self):
         """Generates a configuration file for this projection"""
