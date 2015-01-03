@@ -27,6 +27,9 @@ from leam.luc.config import PROJECTNAME
 from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 import json
 
+import logging
+log = logging.getLogger(__name__)
+
 LUCScenarioSchema = folder.ATFolderSchema.copy() + atapi.Schema((
 
     # -*- Your Archetypes field definitions here ... -*-
@@ -190,6 +193,19 @@ class LUCScenario(folder.ATFolder):
     declinemap = atapi.ATReferenceFieldProperty('declinemap')
 
 
+    def cmdline(self):
+        url = self.absolute_url()
+        cmd = api.portal.get_registry_record(
+                'leam.luc.interfaces.settings.ILUCSettings.scenario_cmd')
+        return cmd.format(id=self.id, url=url)
+
+    def repository(self):
+        url = self.absolute_url()
+        repo = api.portal.get_registry_record(
+                'leam.luc.interfaces.settings.ILUCSettings.scenario_repo')
+        return repo.format(id=self.id, url=url)
+
+
     security.declarePublic('end_run')
     def end_run(self):
         """Mark the run as complete, set the end time, and set
@@ -270,15 +286,14 @@ class LUCScenario(folder.ATFolder):
 
         context = aq_inner(self)
         portal = api.portal.get()
-        portal_path = '/'.join(portal.getPhysicalPath())
 
         r = {
             '@context': 'http://leamgroup.com/contexts/scenario.jsonld',
-            '@id': self.absolute_url(),
+            '@id': context.absolute_url(),
             'shortname': self.id,
-            'title': self.title,
-            'results': self.absolute_url(),
-            'config': self.absolute_url()+'/config',
+            'title': context.title,
+            'results': context.absolute_url(),
+            'config': context.absolute_url()+'/config',
 
             'resources': {
                 'grass': context.luc.resources.grass.absolute_url() \
@@ -336,15 +351,18 @@ class LUCScenario(folder.ATFolder):
         """Returns the configuration necessary for running the model"""
         #import pdb; pdb.set_trace()
 
-        context = aq_inner(self)
         portal = api.portal.get()
-        portal_path = '/'.join(portal.getPhysicalPath())
+        portal_url = portal.absolute_url()
+
+        context = aq_inner(self)
 
         model = Element('model')
         tree = SubElement(model, 'scenario')
-        SubElement(tree, 'id').text = self.id
-        SubElement(tree, 'title').text = self.title
-        SubElement(tree, 'results').text = self.absolute_url()
+        SubElement(tree, 'id').text = context.id
+        SubElement(tree, 'title').text = context.title
+        SubElement(tree, 'portal').text = portal_url
+        SubElement(tree, 'results').text = context.absolute_url()
+
         SubElement(tree, 'grass_loc').text = \
             context.luc.resources.grass.absolute_url() + '/at_download/file'
 
@@ -369,14 +387,8 @@ class LUCScenario(folder.ATFolder):
         for p in self.getDeclinemap():
             reg.append(fromstring(p.getConfig()))
 
-        SubElement(tree, 'post-processing').text = self.absolute_url() + \
+        SubElement(tree, 'post-processing').text = context.absolute_url() + \
                 '/queue_post'
-        #urltool = getToolByName(self.context, 'portal_url')
-        #portal = urltool.getPortalObject()
-        #zones = portal.luc.scenarios.subarearesults
-        #for p in zones.values():
-        #    SubElement(reg, 'zones').text = p.absolute_url() + \
-        #        '/at_download/simImage'
 
         self.REQUEST.RESPONSE.setHeader('Content-Type',
             'application/xml;;charset=UTF-8')
@@ -423,7 +435,7 @@ class LUCScenario(folder.ATFolder):
     def set_view(self):
         """set the default content on scenario folder view"""
 
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         context = aq_inner(self)
 
         view_id = self.REQUEST.get('view_id', None)

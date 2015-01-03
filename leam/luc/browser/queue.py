@@ -1,5 +1,3 @@
-import json
-
 from zope.interface import implements, Interface
 
 from Products.Five import BrowserView
@@ -7,6 +5,8 @@ from Products.CMFCore.utils import getToolByName
 
 from leam.luc import lucMessageFactory as _
 from leam.luc.interfaces import IModel
+
+import json
 
 
 class IPopQueue(Interface):
@@ -50,19 +50,13 @@ class PopQueue(BrowserView):
                 id = obj.id,
                 title = obj.title,
                 url = url,
-                config = url + '/getConfig',
-                on_done = url + '/run_complete',
+                repository = obj.repository(),
+                cmdline = obj.cmdline(),
+                on_success = url + '/success',
+                on_error = url + '/error',
                 )
+                #cmdline = getattr(obj, 'cmdline', ''),
 
-            try:
-                rsp['repository'] = obj.getRepository(obj)
-            except AttributeError:
-                rsp['repository'] = ''
-
-            try:
-                rsp['cmdline'] = obj.getCmdline(obj)
-            except AttributeError:
-                rsp['cmdline'] = ''
 
             # mark the object as running
             obj.runstatus = 'running'
