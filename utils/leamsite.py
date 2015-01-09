@@ -12,8 +12,6 @@ from mechanize import Browser
 from optparse import OptionParser
 
 LEAMSITE = "http://datacenter.leamgroup.com/index"
-USER = "admin"
-PASSWD = "leam4z"
 
 
 def url_join(*args):
@@ -53,7 +51,7 @@ def get_filename(rsp):
 
 class LEAMsite:
     
-    def __init__(self, site, user=USER, passwd=PASSWD):
+    def __init__(self, site, user, passwd):
         self.site = site
         self.error = False
         self.b = Browser()
@@ -72,7 +70,10 @@ class LEAMsite:
             # try logging in from the main login page
             self.b.open('/'.join((site,"login_form")))
             self.b.select_form(nr=1)
-            
+
+        if not user or not password:
+            raise ValueError('user and password are required')
+
         self.b['__ac_name'] = user
         self.b['__ac_password'] = passwd
         r = self.b.open(self.b.click())
@@ -428,9 +429,9 @@ def main():
 
     parser.add_option("-u", "--url", metavar="URL", default=None,
        help="<URL> of plone site")
-    parser.add_option("-n", "--username", metavar="USERNAME", default=USER,
+    parser.add_option("-n", "--username", metavar="USERNAME", default='',
        help="<USERNAME> used to authenticate to plone")
-    parser.add_option("-p", "--password", metavar="PASSWORD", default=PASSWD,
+    parser.add_option("-p", "--password", metavar="PASSWORD", default='',
        help="<PASSWORD> used to authenticate to plone")
 
     parser.add_option("-t", "--title", metavar="TITLE", default=None,
@@ -481,8 +482,11 @@ def main():
 
     (opts, args) = parser.parse_args()
 
+    user = opts.username or os.environ.get('PORTAL_USER', '')
+    password = opts.password or os.environ('PORTAL_PASSWORD','')
+
     if opts.url:
-        site = LEAMsite(opts.url, opts.username, opts.password)
+        site = LEAMsite(opts.url, user, password)
     else:
         sys.stderr.write('Error: URL must be specified.\n\n')
         parser.print_help()
