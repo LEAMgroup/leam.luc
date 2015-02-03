@@ -299,4 +299,22 @@ class Projection(base.ATCTContent):
         #return unicode(proj.getvalue())
         return proj.getvalue()
 
+    security.declarePublic('csv')
+    def csv(self):
+        """return the projection in 3-column CSV format"""
+        proj = StringIO()
+        proj.write('# population and employment projection\n')
+        proj.write('# title: %s\n' % self.title)
+        proj.write('# url: %s/csv\n' % self.absolute_url())
+
+        for p in self.getProjection():
+            proj.write(', '.join((p['year'], p['pop'].replace(',',''), 
+                                  p['emp'].replace(',',''))))
+
+        self.REQUEST.RESPONSE.setHeader('Content-Type', 'text/csv')
+        self.REQUEST.RESPONSE.setHeader('Content-Disposition',
+            'attachment; filename="%s.csv"' % self.title)
+        return proj.getvalue()
+
+
 atapi.registerType(Projection, PROJECTNAME)
