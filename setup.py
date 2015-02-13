@@ -61,6 +61,7 @@ setup(name='leam.luc',
                         # -*- Extra requirements: -*-
                         'plone.app.registry',
                         'plone.api',
+                        'Products.DataGridField',
                         ],
       tests_require=tests_require,
       extras_require=dict(tests=tests_require),
