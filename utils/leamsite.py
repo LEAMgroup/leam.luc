@@ -71,7 +71,7 @@ class LEAMsite:
             self.b.open('/'.join((site,"login_form")))
             self.b.select_form(nr=1)
 
-        if not user or not password:
+        if not user or not passwd:
             raise ValueError('user and password are required')
 
         self.b['__ac_name'] = user

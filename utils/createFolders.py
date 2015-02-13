@@ -8,18 +8,17 @@ def main():
 
     usage = "usage: %prog [options] <site URL>"
     parser = optparse.OptionParser(usage=usage)
-    parser.add_option("-u", "--user", default="",
-        help="Plone user")
-    parser.add_option("-p", "--password", default="",
-        help="Plone user's password")
+    parser.add_option("-u", "--user", 
+            default=os.environ.get('PORTAL_USER', ''),
+            help="Plone user")
+    parser.add_option("-p", "--password",
+            default=os.environ.get('PORTAL_PASSWORD', ''),
+            help="Plone user's password")
 
     (opts, args) = parser.parse_args()
 
     if len(args) != 1:
         parser.error("the URL to the Plone site is required")
-
-    user = opts.user or os.environ.get('PORTAL_USER', '')
-    password = opts.password or os.environ.get('PORTAL_PASSWORD', '')
 
     url = args[0]
     site = LEAMsite(url, user=opts.user, passwd=opts.password)
@@ -43,10 +42,11 @@ def main():
 
     projections = site.createFolder("projections", top)
     site.editFolder(projections, 
-        title="Subregional Projections",
+        title="Projections",
         description="Enter population and employment projection associated "
-            "with specific areas in this folder.  The projection may "
-            "contains zones, population and employment densities."
+            "with specific areas in this folder.  The projection consist of "
+            "the projection rate by year, a region or zone, and population "
+            "and employment density maps."
     )
 
     subregional = site.createFolder("subregional", projections)
